@@ -1,4 +1,30 @@
-angular.module('Utils', [])
+angular.module('Utilities', [])
+  .factory('Bus', [function() {
+    var listeners = {
+      data: [],
+      frame: []
+    };
+    return {
+      onData: function(cbFn) {
+        listeners.data.push(cbFn);
+      },
+      push: function(data) {
+        listeners.data.forEach(function(fn) {
+          fn(data);
+        });
+      },
+      onFrame: function(cbFn) {
+        listeners.frame.push(cbFn);
+      },
+      '$init': function() {
+        view.onFrame = function(evt) {
+          listeners.frame.forEach(function(fn) {
+            fn(evt);
+          });
+        };
+      }
+    };
+  }])
   .factory('Utils', [function() {
     return {
       luminosity: function(hex, lum) {

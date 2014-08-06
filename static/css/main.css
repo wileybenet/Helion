@@ -1,6 +1,7 @@
 html, body {
   margin: 0;
   padding: 0;
+  font-family: sans-serif;
 }
 
 #main-canvas {
@@ -12,4 +13,19 @@ html, body {
   background: -ms-linear-gradient(top,  #003366 0%,#000000 100%); /* IE10+ */
   background: linear-gradient(to bottom,  #003366 0%,#000000 100%); /* W3C */
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#003366', endColorstr='#000000',GradientType=0 ); /* IE6-9 */
+}
+
+.popup {
+  background-color: rgba(0, 0, 0, 0.44);
+  border: 1px solid rgba(255, 255, 255, .2);
+  padding: 10px 14px;
+  max-width: 120px;
+  position: absolute;
+  display: none;
+  z-index: 10;
+  color: #FFF;
+  font-size: 12px;
+}
+.show {
+  display: block;
 }

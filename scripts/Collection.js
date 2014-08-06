@@ -1,6 +1,6 @@
 angular.module('Collection', [])
   .service('Collection', ['Canvas', 'Utils', function(Canvas, Utils) {
-    function Collection(name, bodies) {
+    function Collection(name, bodies, options) {
       var this_ = this,
         raduis;
       this.name = name;
@@ -17,7 +17,7 @@ angular.module('Collection', [])
 
         this.path.strokeColor = 'white';
         this.path.opacity = 0.2;
-        this.path.fillColor = 'rgba(0,0,0,0.2)'
+        this.path.fillColor = 'rgba(0,0,0,0.2)';
 
         bodies.forEach(function(body) {
           if (body instanceof Group) {

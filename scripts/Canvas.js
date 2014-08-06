@@ -1,21 +1,30 @@
 angular.module('Canvas', [])
   .service('Canvas', [function() {
     return {
-      newLayer: function(name) {
-        var layer = new Layer();
-        layer.name = name;
-        return name;
-      },
-      init: function() {
+      '$init': function() {
         var canvas = document.getElementById('main-canvas'),
           layer;
         paper.setup(canvas);
-        layer = project.activeLayer;
-        project.activeLayer.name = 'layer_1';
-        this.background = new Layer();
+        this.background = project.activeLayer;
         this.background.name = 'background';
-        project.layers.reverse();
-        layer.activate();
+        this.movers = new Layer();
+        this.movers.name = 'movers';
+        this.bodies = new Layer();
+        this.bodies.name = 'bodies';
+        this.testing = new Layer();
+        this.testing.name = 'testing';
+      }
+    };
+  }])
+  .directive('canvasPopup', [function() {
+    return {
+      template: [
+        '{{data.info}}'
+      ].join(''),
+      scope: {
+        data: '=canvasPopup'
+      },
+      link: function(scope, element, attrs) {
       }
     };
   }]);

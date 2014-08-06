@@ -1,15 +1,18 @@
 angular.module('Body', [])
-  .service('Body', ['Utils', function(Utils) {
+  .service('Body', ['Bus', 'Canvas', 'Utils', function(Bus, Canvas, Utils) {
     function Body(name, coords, radius, options) {
-      var this_ = this,
-        path = new Path.Circle({
-          radius: radius,
-          center: coords,
-          shadowColor: '#000',
-          shadowBlur: 6,
-          shadowOffset: new Point(5, 5)
-        });
-      path.fillColor = {
+      var this_ = this;
+
+      this.name = name;
+      this.styles = {};
+      this.object = new Path.Circle({
+        radius: radius,
+        center: coords,
+        shadowColor: '#000',
+        shadowBlur: 6,
+        shadowOffset: new Point(5, 5)
+      });
+      this.object.fillColor = {
         gradient: {
           stops: [
             [Utils.luminosity(options.fill, 0.2), 0.05],
@@ -18,27 +21,28 @@ angular.module('Body', [])
           ],
           radial: true
         },
-        origin: [path.position.x-(radius*0.5), path.position.y],
-        destination: path.bounds.rightCenter,
+        origin: [this.object.position.x-(radius*0.5), this.object.position.y],
+        destination: this.object.bounds.rightCenter,
       };
 
       if (options.stroke) {
-        path.strokeColor = Utils.luminosity(options.stroke, -0.3);
-        path.strokeWidth = options.strokeWidth || 1;
-        path.srokeOpacity = options.strokeOpacity || 0.5;
-        path.shadowColor = Utils.luminosity(options.shadow || options.stroke, 0);
-        path.shadowBlur = 30;
-        path.shadowOffset = new Point(0, 0);
+        this.object.strokeColor = Utils.luminosity(options.stroke, -0.3);
+        this.object.strokeWidth = options.strokeWidth || 1;
+        this.object.srokeOpacity = options.strokeOpacity || 0.5;
+        this.object.shadowColor = Utils.luminosity(options.shadow || options.stroke, 0);
+        this.object.shadowBlur = 30;
+        this.object.shadowOffset = new Point(0, 0);
+        this.styles.strokeColor = this.object.strokeColor;
       }
 
       this.title = new PointText({
-        point: path.bounds.topCenter.add([0, -10]),
+        point: this.object.bounds.topCenter.add([0, -10]),
         justification: 'center',
         fontSize: 10,
         content: name
       });
       this._label = new PointText({
-        point: path.bounds.center,
+        point: this.object.bounds.center,
         justification: 'center',
         fontSize: 8,
         fillColor: 'white'
@@ -49,11 +53,15 @@ angular.module('Body', [])
         scale: []
       };
 
-      this.path = new Group([path, this.title, this._label]);
+      this.path = new Group([this.object, this.title, this._label]);
 
       this.path.onMouseDown = this.onMouseDown.bind(this);
       this.path.onMouseDrag = this.onMouseDrag.bind(this);
       this.path.onMouseUp = this.onMouseUp.bind(this);
+      this.path.onMouseEnter = this.onMouseEnter.bind(this);
+      this.path.onMouseLeave = this.onMouseLeave.bind(this);
+
+      Canvas.bodies.addChild(this.path);
 
       this.toggle();
     };
@@ -70,7 +78,25 @@ angular.module('Body', [])
     };
 
     Body.prototype.onMouseUp = function(evt) {
-      // console.log('up', this);
+      Bus.push({
+        popupInfo: {
+          x: this.object.bounds.rightCenter.x,
+          y: this.object.bounds.bottomRight.y,
+          info: 'Testing delivery methods.'
+        }
+      });
+    };
+
+    Body.prototype.onMouseEnter = function(evt) {
+      this.highlight(true);
+    };
+
+    Body.prototype.onMouseLeave = function(evt) {
+      this.highlight();
+    };
+
+    Body.prototype.highlight = function(state) {
+      // this.object.strokeColor = state ? '#F00' : this.styles.strokeColor;
     };
 
     Body.prototype.toggle = function(state) {

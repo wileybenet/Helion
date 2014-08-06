@@ -6,13 +6,16 @@
   <script type="text/javascript" src="scripts/lib/es5-shim.js"></script>
   <script type="text/javascript" src="scripts/lib/paper-full.js"></script>
   <script type="text/javascript" src="scripts/lib/angular.js"></script>
-  <script type="text/javascript" src="scripts/utilities.js"></script>
+  <script type="text/javascript" src="scripts/Utilities.js"></script>
   <script type="text/javascript" src="scripts/Canvas.js"></script>
   <script type="text/javascript" src="scripts/Body.js"></script>
+  <script type="text/javascript" src="scripts/Mover.js"></script>
   <script type="text/javascript" src="scripts/Collection.js"></script>
+  <script type="text/javascript" src="scripts/System.js"></script>
   <script type="text/javascript" src="scripts/app.js"></script>
 </head>
-  <body>
-    <canvas id="main-canvas" resize data-canvas></canvas>
+  <body data-ng-controller="CanvasCtrl">
+    <canvas id="main-canvas" resize></canvas>
+    <div class="popup" data-canvas-popup="popupInfo" style="top: {{popupInfo.y}}px; left: {{popupInfo.x}}px" data-ng-class="{show: popupInfo}"></div>
   </body>
 </html>
