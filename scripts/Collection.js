@@ -4,6 +4,7 @@ angular.module('Collection', [])
       var this_ = this,
         raduis;
       this.name = name;
+      this.bodies = bodies;
       this.paths = new Group(bodies.pluck('path'));
       if (bodies.length > 1) {
         radius = Utils.circumscribeRadius(this.paths.bounds);
@@ -16,6 +17,7 @@ angular.module('Collection', [])
 
         this.path.strokeColor = 'white';
         this.path.opacity = 0.2;
+        this.path.fillColor = 'rgba(0,0,0,0.2)'
 
         bodies.forEach(function(body) {
           if (body instanceof Group) {
@@ -27,9 +29,25 @@ angular.module('Collection', [])
           }
         });
         Canvas.background.addChild(this.path);
-      }
 
-      paper.view.draw();
+        this.path.onMouseEnter = this.onMouseEnter.bind(this);
+        this.path.onMouseLeave = this.onMouseLeave.bind(this);
+      } else {
+        this.bodies[0].path.onMouseEnter = this.onMouseEnter.bind(this);
+        this.bodies[0].path.onMouseLeave = this.onMouseLeave.bind(this);
+      }
+    };
+
+    Collection.prototype.onMouseEnter = function() {
+      this.bodies.forEach(function(body) {
+        body.toggle(true);
+      });
+    };
+
+    Collection.prototype.onMouseLeave = function() {
+      this.bodies.forEach(function(body) {
+        body.toggle();
+      });
     };
 
     Collection.prototype.updateBounds = function() {

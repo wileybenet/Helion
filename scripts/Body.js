@@ -11,7 +11,11 @@ angular.module('Body', [])
         });
       path.fillColor = {
         gradient: {
-          stops: [[Utils.luminosity(options.fill, 0), 0.3], [Utils.luminosity(options.fill, -0.5), 0.7], ['#000', 1]],
+          stops: [
+            [Utils.luminosity(options.fill, 0.2), 0.05],
+            [Utils.luminosity(options.fill, -0.1), 0.3],
+            [Utils.luminosity(options.fill, -0.5), 0.7], ['#000', 1]
+          ],
           radial: true
         },
         origin: [path.position.x-(radius*0.5), path.position.y],
@@ -23,7 +27,7 @@ angular.module('Body', [])
         path.strokeWidth = options.strokeWidth || 1;
         path.srokeOpacity = options.strokeOpacity || 0.5;
         path.shadowColor = Utils.luminosity(options.shadow || options.stroke, 0);
-        path.shadowBlur = 12;
+        path.shadowBlur = 30;
         path.shadowOffset = new Point(0, 0);
       }
 
@@ -31,7 +35,6 @@ angular.module('Body', [])
         point: path.bounds.topCenter.add([0, -10]),
         justification: 'center',
         fontSize: 10,
-        fillColor: 'white',
         content: name
       });
       this._label = new PointText({
@@ -52,7 +55,7 @@ angular.module('Body', [])
       this.path.onMouseDrag = this.onMouseDrag.bind(this);
       this.path.onMouseUp = this.onMouseUp.bind(this);
 
-      paper.view.draw();
+      this.toggle();
     };
 
     Body.prototype.onMouseDown = function(evt) {
@@ -68,6 +71,10 @@ angular.module('Body', [])
 
     Body.prototype.onMouseUp = function(evt) {
       // console.log('up', this);
+    };
+
+    Body.prototype.toggle = function(state) {
+      this.title.fillColor = state ? 'rgba(255,255,255,0.4)' : 'rgba(255,255,255,0.4)';
     };
 
     Body.prototype._trigger = function(evt, data) {
