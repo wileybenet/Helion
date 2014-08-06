@@ -14,6 +14,12 @@ angular.module('Helion', ['Body', 'Mover', 'Canvas', 'Collection', 'System', 'Ut
   function($scope, Collection, Body, Mover, Canvas, System, Bus) {
     Canvas.$init();
     Bus.$init();
+    Bus.onData(function(data) {
+      for (var key in data) {
+        $scope[key] = data[key];
+      }
+      $scope.$digest();
+    });
 
     System.create([
       new Collection('Ferux', [
@@ -47,23 +53,13 @@ angular.module('Helion', ['Body', 'Mover', 'Canvas', 'Collection', 'System', 'Ut
       ])
     ]);
 
-    window.System = System;
+    new Mover(System.Eris.Eris, {fixed: 0.4})
+      .setWaypoints([System.Mir.Mir]).start('bounce');
+    new Mover(System.Eris.Eris, {fixed: 0.4})
+      .setWaypoints([System.Mir.Mir, System.Mir.Aqx]).start('bounce');
+    new Mover(System.Eris.Eris, {fixed: [-0.4, 0.2, 0.3], layover: 1})
+      .setWaypoints([System.Eris.Maria, System.Eris.Jorah]).start('loop');
 
-    window.mover = new Mover(System.Eris.Eris);
-
-    movers = [];
-    setInterval(function() {
-      var mover = new Mover(System.randomBody());
-      mover.to(System.randomBody());
-      movers.push(mover);
-    }, 50);
-
-    Bus.onData(function(data) {
-      for (var key in data) {
-        $scope[key] = data[key];
-      }
-      $scope.$digest();
-    });
 
     paper.view.draw();
   }]);

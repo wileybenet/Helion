@@ -1,0 +1,25 @@
+{
+  "name": "Helion",
+  "version": "0.0.0",
+  "description": "Helion System Web App",
+  "main": "app/server.js",
+  "dependencies": {
+    "express": "^4.8.1",
+    "aws-sdk": "^2.0.11",
+    "colors": "^0.6.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/wileybenet/Helion.git"
+  },
+  "author": "Wiley Bennett",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/wileybenet/Helion/issues"
+  },
+  "homepage": "https://github.com/wileybenet/Helion"
+}
