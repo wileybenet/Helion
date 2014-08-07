@@ -1,13 +1,17 @@
 angular.module('Body', [])
-  .service('Body', ['Bus', 'Canvas', 'Utils', function(Bus, Canvas, Utils) {
-    function Body(name, coords, radius, options) {
-      var this_ = this;
+  .service('Body', ['$resource', 'Bus', 'Canvas', 'Utils', function($resource, Bus, Canvas, Utils) {
+    var resource = $resource('/api/v1/body', {}, {});
+    function Body(name, config) {
+      var this_ = this,
+        options = config.options || {};
+
+      this.model = config;
 
       this.name = name;
       this.styles = {};
       this.object = new Path.Circle({
-        radius: radius,
-        center: coords,
+        radius: config.radius,
+        center: config.position,
         shadowColor: '#000',
         shadowBlur: 6,
         shadowOffset: new Point(5, 5)
@@ -21,7 +25,7 @@ angular.module('Body', [])
           ],
           radial: true
         },
-        origin: [this.object.position.x-(radius*0.5), this.object.position.y],
+        origin: [this.object.position.x-(config.radius*0.5), this.object.position.y],
         destination: this.object.bounds.rightCenter,
       };
 
@@ -78,11 +82,12 @@ angular.module('Body', [])
     };
 
     Body.prototype.onMouseUp = function(evt) {
+      var position = this.object.bounds.bottomRight.subtract(this.model.radius/1.5, this.model.radius/1.5);
       Bus.push({
         popupInfo: {
-          x: this.object.bounds.rightCenter.x,
-          y: this.object.bounds.bottomRight.y,
-          info: 'Testing delivery methods.'
+          x: position.x,
+          y: position.y,
+          model: this.model
         }
       });
     };
@@ -112,6 +117,9 @@ angular.module('Body', [])
     Body.prototype.on = function(evt, cbFn) {
       this._listeners[evt].push(cbFn);
     };
+
+    Body.query = resource.query;
+    Body.save = Body.save;
 
     return Body;
   }]);

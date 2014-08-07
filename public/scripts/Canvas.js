@@ -19,9 +19,14 @@ angular.module('Canvas', [])
   .directive('canvasPopup', [function() {
     return {
       template: [
-        '<div class="popup-close action" data-ng-click="data.info = null">&times;</div>',
-        '<div>',
-          '{{data.info}}',
+        '<div class="popup-close action" data-ng-click="data.model = null">',
+          '<i class="fa fa-times"></i>',
+        '</div>',
+        '<h4>',
+          '{{data.model.name}}',
+        '</h4>',
+        '<div class="popup-body">',
+          '{{data.model.description}}',
         '</div>'
       ].join(''),
       scope: {

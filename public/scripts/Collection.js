@@ -1,5 +1,6 @@
 angular.module('Collection', [])
-  .service('Collection', ['Canvas', 'Utils', function(Canvas, Utils) {
+  .service('Collection', ['$resource', 'Canvas', 'Utils', function($resource, Canvas, Utils) {
+    var resource = $resource('/api/v1/collection', {}, {});
     function Collection(name, bodies, options) {
       var this_ = this,
         raduis;
@@ -56,6 +57,9 @@ angular.module('Collection', [])
       this.path.scale(radius/this.path.radius);
       this.path.radius = radius;
     };
+
+    Collection.query = resource.query;
+    Collection.save = resource.save;
 
     return Collection;
   }]);

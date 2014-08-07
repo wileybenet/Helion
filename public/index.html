@@ -3,9 +3,11 @@
 <head>
   <title>Helion</title>
   <link rel="stylesheet" type="text/css" href="static/css/main.css">
+  <link rel="stylesheet" type="text/css" href="static/css/font-awesome.min.css">
   <script type="text/javascript" src="scripts/lib/es5-shim.js"></script>
   <script type="text/javascript" src="scripts/lib/paper-full.js"></script>
   <script type="text/javascript" src="scripts/lib/angular.js"></script>
+  <script type="text/javascript" src="scripts/lib/angular-resource.js"></script>
   <script type="text/javascript" src="scripts/Utilities.js"></script>
   <script type="text/javascript" src="scripts/Canvas.js"></script>
   <script type="text/javascript" src="scripts/Body.js"></script>
@@ -16,6 +18,12 @@
 </head>
   <body data-ng-controller="CanvasCtrl">
     <canvas id="main-canvas" resize></canvas>
-    <div class="popup" data-canvas-popup="popupInfo" style="top: {{popupInfo.y}}px; left: {{popupInfo.x}}px" data-ng-class="{show: popupInfo.info}"></div>
+    <div class="spinner-center" data-ng-if="!canvasLoaded">
+      <i class="fa fa-circle-o-notch fa-spin"></i>
+    </div>
+    <div class="login-container">
+      
+    </div>
+    <div class="popup" data-canvas-popup="popupInfo" style="top: {{popupInfo.y}}px; left: {{popupInfo.x}}px" data-ng-class="{show: popupInfo.model}"></div>
   </body>
 </html>

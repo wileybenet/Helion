@@ -499,6 +499,18 @@ defineProperties(ArrayPrototype, {
                 return item[key];
             });
         }
+    },
+    groupBy: function(key) {
+        if (arguments.length === 0) {
+            return [];
+        } else {
+            var groups = {};
+            this.forEach(function(item) {
+                groups[item[key]] = groups[item[key]] || [];
+                groups[item[key]].push(item);
+            });
+            return groups;
+        }
     }
 }, !properlyBoxesContext(ArrayPrototype.pluck));
 
