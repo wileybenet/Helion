@@ -1,4 +1,4 @@
-angular.module('Collection', [])
+angular.module('Collection', ['Body'])
   .service('Collection', ['$resource', 'Canvas', 'Utils', function($resource, Canvas, Utils) {
     var resource = $resource('/api/v1/collection', {}, {});
     function Collection(name, bodies, options) {
@@ -16,9 +16,10 @@ angular.module('Collection', [])
 
         this.path.radius = radius;
 
-        this.path.strokeColor = 'white';
-        this.path.opacity = 0.2;
-        this.path.fillColor = 'rgba(0,0,0,0.2)';
+        // this.path.strokeColor = 'white';
+        // this.path.dashArray = [2, 10];
+        // this.path.opacity = 0.1;
+        // this.path.fillColor = 'rgba(0,0,0,0.2)';
 
         bodies.forEach(function(body) {
           if (body instanceof Group) {

@@ -1,4 +1,4 @@
-angular.module('Helion', ['ngResource', 'Body', 'Mover', 'Canvas', 'Collection', 'System', 'Utilities'])
+angular.module('Helion', ['ngResource', 'Mover', 'Canvas', 'Collection', 'System', 'Utilities'])
   .config([function() {
     paper.install(window);
     var tool = new Tool();
@@ -33,12 +33,29 @@ angular.module('Helion', ['ngResource', 'Body', 'Mover', 'Canvas', 'Collection',
         });
       System.create(collections);
 
-      new Mover(System.Eris.Eris, {fixed: 0.4})
-        .setWaypoints([System.Mir.Mir]).start('bounce');
-      new Mover(System.Eris.Eris, {fixed: 0.4})
-        .setWaypoints([System.Mir.Mir, System.Mir.Aqx]).start('bounce');
+      new Mover(System.Mir.Mir, {fixed: 0.4})
+        .setWaypoints([System.Eris.Eris])
+        .start('bounce');
+      new Mover(System.Eris.Eris, {fixed: [0.4, null]})
+        .setWaypoints([System.Mir.Mir, System.Mir.Aqx])
+        .start('bounce');
+      new Mover(System.Mir.Mir, {fixed: 0.1})
+        .setWaypoints([System.Rome.Kassel])
+        .start('bounce');
+      new Mover(System.Mir.Mir, {fixed: -0.3})
+        .setWaypoints([System.Alkon.Alkon])
+        .start('bounce');
+      new Mover(System.Mir.Mir, {})
+        .setWaypoints([System.Mir.Krasic])
+        .start('bounce');
       new Mover(System.Eris.Eris, {fixed: [-0.4, 0.2, 0.3], layover: 1})
-        .setWaypoints([System.Eris.Maria, System.Eris.Jorah]).start('loop');
+        .setWaypoints([System.Eris.Maria, System.Eris.Jorah])
+        .start('loop');
+
+
+      new Mover(System.Mir.Krasic, {fixed: 0.15, color: '#0F0'})
+        .setWaypoints([System.Earth.Earth])
+        .start('bounce');
 
       paper.view.draw();
       $scope.canvasLoaded = true;

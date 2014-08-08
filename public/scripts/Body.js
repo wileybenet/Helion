@@ -1,13 +1,19 @@
 angular.module('Body', [])
   .service('Body', ['$resource', 'Bus', 'Canvas', 'Utils', function($resource, Bus, Canvas, Utils) {
-    var resource = $resource('/api/v1/body', {}, {});
+    var resource = $resource('/api/v1/body/:id', {}, {
+      update: {
+        method: 'PUT'
+      }
+    });
+    window.utils = Utils;
     function Body(name, config) {
       var this_ = this,
         options = config.options || {};
 
-      this.model = config;
+      this.model = new (resource.bind({id: config._id}))(config);
 
       this.name = name;
+      this.color = Utils.luminosity(options.fill, 0);
       this.styles = {};
       this.object = new Path.Circle({
         radius: config.radius,
@@ -90,6 +96,7 @@ angular.module('Body', [])
           model: this.model
         }
       });
+      window.model = this.model;
     };
 
     Body.prototype.onMouseEnter = function(evt) {

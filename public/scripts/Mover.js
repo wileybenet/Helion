@@ -1,5 +1,5 @@
 angular.module('Mover', [])
-  .service('Mover', ['Canvas', 'Bus', function(Canvas, Bus) {
+  .service('Mover', ['Canvas', 'Bus', 'Utils', function(Canvas, Bus, Utils) {
     var getEntropy = function() {
         var side = Math.random() - 0.5;
         return (Math.random() / 3) * (side / Math.abs(side));
@@ -44,20 +44,26 @@ angular.module('Mover', [])
         return false;
       this.path = Path.Circle({
         center: this.position,
-        radius: 1.2,
-        fillColor: '#fff'
+        radius: 1.7,
+        fillColor: this.options.color || this.waypoints[0].color || '#fff'
       });
-      Canvas.movers.addChild(this.path);
       this.moving = true;
-      this.current.trajectory = getEntropyArc(this.path.bounds.center, destination.object.bounds.center, Array.isArray(this.options.fixed) ? this.options.fixed[(state-1 > -1) ? state-1 : this.waypoints.length-1] : this.options.fixed);
-      this.current.trajectory.dashArray = [2, 6];
+      this.current.trajectory = getEntropyArc(
+        this.path.bounds.center,
+        destination.object.bounds.center,
+        Array.isArray(this.options.fixed)
+          ? this.options.fixed[direction > 0
+            ? ((state-direction > -1) ? state-direction : this.waypoints.length-1)
+            : state
+          ]
+          : this.options.fixed
+      );
       this.current.trajectory.strokeWidth = 0.5;
       this.current.curve = 0;
       this.current.position = 0;
       this.current.count = 0;
       this.current.speed = 1 / this.current.trajectory.length * 2 * this.current.trajectory.curves.length;
       this.current.total = this.current.trajectory.length / 2;
-      Canvas.movers.addChild(this.current.trajectory);
       this.current.cbFn = function() {
         var dir = direction,
           st = state+direction;
@@ -74,6 +80,9 @@ angular.module('Mover', [])
           this.to(st, 'loop', dir);
         }
       };
+
+      Canvas.tracks.addChild(this.current.trajectory);
+      Canvas.movers.addChild(this.path);
     };
 
     Mover.prototype.move = function() {
@@ -81,7 +90,7 @@ angular.module('Mover', [])
       this.current.position += this.current.speed;
       this.path.position = this.current.trajectory.curves[this.current.curve].getPointAt(Math.min(this.current.position, 0.999), true);
       this.current.count++;
-      this.current.trajectory.strokeColor = 'rgba(255,255,255,'+Math.min(this.current.count / 100, ((this.current.total-this.current.count) / 100), .3)+')';
+      this.current.trajectory.strokeColor = 'rgba('+Utils.hexToRgb('fff')+','+Math.min(this.current.count / 100, ((this.current.total-this.current.count) / 100), .2)+')';
       if (this.current.position >= 1) {
         this.current.curve++;
         if (this.current.curve >= this.current.trajectory.curves.length) {
