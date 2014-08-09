@@ -52,7 +52,6 @@ angular.module('Helion', ['ngResource', 'Mover', 'Canvas', 'Collection', 'System
         .setWaypoints([System.Eris.Maria, System.Eris.Jorah])
         .start('loop');
 
-
       new Mover(System.Mir.Krasic, {fixed: 0.15, color: '#0F0'})
         .setWaypoints([System.Earth.Earth])
         .start('bounce');

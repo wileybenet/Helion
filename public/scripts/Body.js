@@ -44,13 +44,6 @@ angular.module('Body', [])
         this.object.shadowOffset = new Point(0, 0);
         this.styles.strokeColor = this.object.strokeColor;
       }
-
-      this.title = new PointText({
-        point: this.object.bounds.topCenter.add([0, -10]),
-        justification: 'center',
-        fontSize: 10,
-        content: name
-      });
       this._label = new PointText({
         point: this.object.bounds.center,
         justification: 'center',
@@ -63,7 +56,7 @@ angular.module('Body', [])
         scale: []
       };
 
-      this.path = new Group([this.object, this.title, this._label]);
+      this.path = new Group([this.object, this._label]);
 
       this.path.onMouseDown = this.onMouseDown.bind(this);
       this.path.onMouseDrag = this.onMouseDrag.bind(this);
@@ -72,8 +65,6 @@ angular.module('Body', [])
       this.path.onMouseLeave = this.onMouseLeave.bind(this);
 
       Canvas.bodies.addChild(this.path);
-
-      this.toggle();
     };
 
     Body.prototype.onMouseDown = function(evt) {
@@ -88,7 +79,7 @@ angular.module('Body', [])
     };
 
     Body.prototype.onMouseUp = function(evt) {
-      var position = this.object.bounds.bottomRight.subtract(this.model.radius/1.5, this.model.radius/1.5);
+      var position = this.object.bounds.topRight.add(10, -20);
       Bus.push({
         popupInfo: {
           x: position.x,
@@ -109,10 +100,6 @@ angular.module('Body', [])
 
     Body.prototype.highlight = function(state) {
       // this.object.strokeColor = state ? '#F00' : this.styles.strokeColor;
-    };
-
-    Body.prototype.toggle = function(state) {
-      this.title.fillColor = state ? 'rgba(255,255,255,0.4)' : 'rgba(255,255,255,0.4)';
     };
 
     Body.prototype._trigger = function(evt, data) {

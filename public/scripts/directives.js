@@ -1,12 +1,12 @@
 angular.module('directives', [])  
-  .directive('canvasPopup', [function() {
+  .directive('canvasPopup', ['$timeout', function($timeout) {
     return {
       template: [
         '<div class="popup-close stop-hover" data-ng-click="data.model = null">',
           '<i class="fa fa-times"></i>',
         '</div>',
         '<h4 data-edit="data.model" data-field="name">',
-          '{{data.model.name}}',
+          '<i class="fa fa-globe"></i> {{data.model.name}}',
         '</h4>',
         '<div class="popup-body" data-edit="data.model" data-field="description">',
           '<span data-ng-bind-html="data.model.description | htmlFormatted"></span>',
@@ -16,7 +16,15 @@ angular.module('directives', [])
         data: '=canvasPopup'
       },
       link: function(scope, element, attrs) {
-
+        // scope.$watch('data', function() {
+        //   $timeout(function() {
+        //     var top = -Math.min(element.height(), parseInt(element.css('top'))-20);
+        //     element.css({
+        //       'margin-top': top + 'px',
+        //       'margin-left': '5px'
+        //     });
+        //   });
+        // }, true);
       }
     };
   }])
@@ -24,13 +32,13 @@ angular.module('directives', [])
     return {
       transclude: true,
       template: [
-        '<div class="modal-drop" data-ng-hide="!editing">',
-          '<div class="modal">',
+        '<div class="modal-drop" data-ng-hide="!editing" data-ng-click="editing = false">',
+          '<div class="modal" data-ng-click="stop($event)">',
             '<div class="close stop-hover" data-ng-click="value = model[field]; editing = false">',
               '<i class="fa fa-times"></i>',
             '</div>',
             '<div class="heading">',
-              '<i class="fade fa fa-edit"></i> Editing <em>{{field | capitalizeFirstLetter}}</em>',
+              '<i class="fa fa-pencil"></i> <em>{{field | capitalizeFirstLetter}}</em>',
             '</div>',
             '<div class="body">',
               '<form name="form">',
@@ -74,8 +82,12 @@ angular.module('directives', [])
         });
 
         scope.getHeight = function(str) {
-          return Math.floor((str || '').length / 30) * 20 + 30;
+          return Math.floor((str || '').length / 30) * 22 + 30;
         };
+
+        scope.stop = function(evt) {
+          evt.stopPropagation();
+        }
 
         element.on('click', function(evt) {
           if (evt.shiftKey) {

@@ -1,20 +1,22 @@
 angular.module('Mover', [])
   .service('Mover', ['Canvas', 'Bus', 'Utils', function(Canvas, Bus, Utils) {
-    var getEntropy = function() {
-        var side = Math.random() - 0.5;
-        return (Math.random() / 3) * (side / Math.abs(side));
-      },
-      getEntropyArc = function(start, end, entropy) {
-        var vector = new Point(end.subtract(start)),
-          offset = vector.length * (entropy || getEntropy()),
-          midpoint = vector.multiply(0.5),
-          normal = Math.atan(-midpoint.x / midpoint.y),
-          dx = offset * Math.cos(normal),
-          dy = offset * Math.sin(normal),
-          middle = new Point([start.x+midpoint.x+dx, start.y+midpoint.y+dy]);
+    var SPEED = 0.1;
 
-        return new Path.Arc(start, middle, end);
-      };
+    function getEntropy() {
+      var side = Math.random() - 0.5;
+      return (Math.random() / 3) * (side / Math.abs(side));
+    }
+    function getEntropyArc(start, end, entropy) {
+      var vector = new Point(end.subtract(start)),
+        offset = vector.length * (entropy || getEntropy()),
+        midpoint = vector.multiply(0.5),
+        normal = Math.atan(-midpoint.x / midpoint.y),
+        dx = offset * Math.cos(normal),
+        dy = offset * Math.sin(normal),
+        middle = new Point([start.x+midpoint.x+dx, start.y+midpoint.y+dy]);
+
+      return new Path.Arc(start, middle, end);
+    };
 
     function Mover(start, options) {
       this.position = start.object.bounds.center
@@ -44,8 +46,10 @@ angular.module('Mover', [])
         return false;
       this.path = Path.Circle({
         center: this.position,
-        radius: 1.7,
-        fillColor: this.options.color || this.waypoints[0].color || '#fff'
+        radius: 1,
+        fillColor: this.options.color
+          || Utils.luminosity(this.waypoints[0].color, 0.8)
+          || '#fff'
       });
       this.moving = true;
       this.current.trajectory = getEntropyArc(
@@ -62,8 +66,8 @@ angular.module('Mover', [])
       this.current.curve = 0;
       this.current.position = 0;
       this.current.count = 0;
-      this.current.speed = 1 / this.current.trajectory.length * 2 * this.current.trajectory.curves.length;
-      this.current.total = this.current.trajectory.length / 2;
+      this.current.speed = 1 / this.current.trajectory.length * SPEED * this.current.trajectory.curves.length;
+      this.current.total = this.current.trajectory.length / SPEED;
       this.current.cbFn = function() {
         var dir = direction,
           st = state+direction;
@@ -90,7 +94,7 @@ angular.module('Mover', [])
       this.current.position += this.current.speed;
       this.path.position = this.current.trajectory.curves[this.current.curve].getPointAt(Math.min(this.current.position, 0.999), true);
       this.current.count++;
-      this.current.trajectory.strokeColor = 'rgba('+Utils.hexToRgb('fff')+','+Math.min(this.current.count / 100, ((this.current.total-this.current.count) / 100), .2)+')';
+      this.current.trajectory.strokeColor = 'rgba('+Utils.hexToRgb('fff')+','+Math.min(this.current.count / 200, ((this.current.total-this.current.count) / 200), 0.1)+')';
       if (this.current.position >= 1) {
         this.current.curve++;
         if (this.current.curve >= this.current.trajectory.curves.length) {

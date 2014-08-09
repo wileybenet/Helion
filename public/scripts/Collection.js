@@ -42,13 +42,13 @@ angular.module('Collection', ['Body'])
 
     Collection.prototype.onMouseEnter = function() {
       this.bodies.forEach(function(body) {
-        body.toggle(true);
+
       });
     };
 
     Collection.prototype.onMouseLeave = function() {
       this.bodies.forEach(function(body) {
-        body.toggle();
+
       });
     };
 
