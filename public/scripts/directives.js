@@ -2,29 +2,36 @@ angular.module('directives', [])
   .directive('canvasPopup', ['$timeout', function($timeout) {
     return {
       template: [
-        '<div class="popup-close stop-hover" data-ng-click="data.model = null">',
+        '<span class="close stop-hover" data-ng-click="data.model = null">',
           '<i class="fa fa-times"></i>',
-        '</div>',
-        '<h4 data-edit="data.model" data-field="name">',
+        '</span>',
+        '<h4 data-edit="data.model" data-field="name" data-ng-class="{flipped: flipped, normal: !flipped}">',
           '<i class="fa fa-globe"></i> {{data.model.name}}',
         '</h4>',
-        '<div class="popup-body" data-edit="data.model" data-field="description">',
+        '<div class="body" data-edit="data.model" data-field="description">',
           '<span data-ng-bind-html="data.model.description | htmlFormatted"></span>',
+        '</div>',
+        '<div class="footer">',
+          'Footer',
         '</div>'
       ].join(''),
       scope: {
         data: '=canvasPopup'
       },
       link: function(scope, element, attrs) {
-        // scope.$watch('data', function() {
-        //   $timeout(function() {
-        //     var top = -Math.min(element.height(), parseInt(element.css('top'))-20);
-        //     element.css({
-        //       'margin-top': top + 'px',
-        //       'margin-left': '5px'
-        //     });
-        //   });
-        // }, true);
+        scope.$watch('data', function() {
+          $timeout(function() {
+            var top = Math.min($(window).height() - element.height() - 20, scope.data.y),
+              left = scope.data.x;
+            if (scope.flipped = $(window).width() - 260 < left) {
+              left = scope.data.x - scope.data.dx - 260;
+            }
+            element.css({
+              top: top + 'px',
+              left: left + 'px'
+            });
+          });
+        }, true);
       }
     };
   }])

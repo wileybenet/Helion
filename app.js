@@ -1,35 +1,25 @@
-var processInfo = require('./node_services/process.info'),
-  Store = require('./node_services/S3.store'),
-  Api = require('./node_services/api'),
-  Server = require('./node_services/Server'),
-  store, api, server;
+// dependencies
+var processInfo = require('./app/process.info'),
+  store = require('./app/s3.store'),
+  Server = require('./app/Server'),
+  models = require('./app/models'),
+  api, server;
 
-store = new Store({
-  path: './config.json'
-});
-api = new Api({
-  store: store
-});
-server = new Server({
-  api: api,
-  ip: null,
-  port: 8000,
-  routes: {
-    'get/:type': 'readAll',
-    'get/:type/:id': 'readOne',
-    'post/:type': 'create',
-    'put/:type/:id': 'update',
-    'delete/:type/:id': 'destroy'
-  }
-});
+store.connect({path: './config.json'})
+  .then(function(store) {
+    models.bind(store);
 
-server.onNotification(function(data) {
-  console.log(' Server %s', data);
-});
-
-store.onNotification(function(data) {
-  console.log(' Store %s', data);
-});
+    server = new Server({
+      ip: null,
+      port: 8000,
+      sessionId: '_helion',
+      resources: [
+        'user',
+        'body',
+        'collection'
+      ]
+    });
+  });
 
 process.on('uncaughtException', function(err) {
   console.log('uncaught', err, err.stack);

@@ -84,6 +84,7 @@ angular.module('Body', [])
         popupInfo: {
           x: position.x,
           y: position.y,
+          dx: this.object.bounds.width + 20,
           model: this.model
         }
       });
