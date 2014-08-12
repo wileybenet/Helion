@@ -21,7 +21,7 @@ module.exports = function(app, session) {
         Model.find(req.params.id).then(cbFn(res), cbFn(res));
       });
       app.post(endpoint + name, session.authorize(0), function(req, res) {
-        Model.create(req.body).then(cbFn(res), cbFn(res));
+        Model.create(new Model(req.body)).then(cbFn(res), cbFn(res));
       });
       app.put(endpoint + name + '/:id', session.authorize(0), function(req, res) {
         Model.update(req.params.id, req.body).then(cbFn(res), cbFn(res));

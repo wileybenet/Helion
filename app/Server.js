@@ -2,8 +2,7 @@
 var path = require('path'),
   express = require('express'),
   bodyParser = require('body-parser'),
-  cookieParser = require('cookie-parser'),
-  passport = require('passport');
+  cookieParser = require('cookie-parser');
 
 // dependencies
 var session = require('./session'),
@@ -28,8 +27,9 @@ var Server = module.exports = function Server(config) {
   app.use(cookieParser());
   app.use(session.deserialize);
 
-  app.post('/session/start', session.authenticate, session.start);
-  app.delete('/session/end', session.end);
+  app.post('/session', session.authenticate, session.start);
+  app.delete('/session', session.end);
+  app.get('/session', session.current);
 
   resources.forEach(function(name) {
     apiV1Resource(name);

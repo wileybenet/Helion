@@ -1,0 +1,52 @@
+form {
+
+}
+
+form .row {
+  position: relative;
+  padding: 3px 0;
+}
+form .row i {
+  padding: 10px 7px;
+  position: absolute;
+  right: 3px;
+  z-index: 1;
+}
+form .row input {
+  width: 100%;
+  padding: 9px;
+  box-sizing: border-box;
+}
+form .footer {
+  margin-top: 5px;
+}
+form .footer button {
+  border: 0;
+}
+form .footer button:disabled {
+  color: #CCC;
+  opacity: 0.6 !important;
+}
+form .error {
+  padding: 11px 10px;
+  margin-bottom: 15px;
+}
+form .error * {
+  font-size: 12px;
+}
+
+
+form.trans .footer button {
+  background-color: transparent;
+}
+form.trans .row input {
+  background-color: transparent;
+  color: #EEE;
+  border: 0;
+}
+form.trans .error {
+  background-color: rgba(255, 56, 56, 0.76);
+}
+form.trans .error * {
+  color: #000;
+}

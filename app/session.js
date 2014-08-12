@@ -29,7 +29,8 @@ var session = module.exports = {
         }
         next();
       }, function(err) {
-        res.end(err);
+        res.send({ error: 'incorrect username or password' });
+        res.end();
         return next();
       });
   },
@@ -43,16 +44,30 @@ var session = module.exports = {
       }
     };
   },
+  start: function(req, res) {
+    if (req.user && req.user._id) {
+      res.cookie('_helion', serialize(req.user), {httpOnly: true});
+      res.send(req.user);
+      res.end();
+    }
+  },
   end: function(req, res) {
     res.clearCookie('_helion');
     res.send({success: true});
     res.end();
   },
-  start: function(req, res) {
-    console.log('  session :'+req.user.username);
-    res.cookie('_helion', serialize(req.user), {maxAge: 900000, httpOnly: true});
-    res.send(req.user);
-    res.end();
+  current: function(req, res) {
+    if (req.user && req.user._id) {
+      User.find(req.user._id).then(function(user) {
+        res.send(user);
+        res.end();
+      }, function(err) {
+        res.end(err);
+      });
+    } else {
+      res.send({error: 'no session'});
+      res.end();
+    }
   },
   deserialize: function(req, res, next) {
     var parts = (req.cookies[sessionId] || '').split(/-(.+)?/);

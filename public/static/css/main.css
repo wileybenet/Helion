@@ -4,6 +4,11 @@ html, body {
   font-family: sans-serif;
 }
 
+button {
+  font-size: 16px;
+  margin: 0;
+}
+
 textarea {
   font-family: sans-serif;
 }
@@ -23,12 +28,28 @@ textarea {
 
 #login-container {
   position: absolute;
-  width: 300px;
-  height: 200px;
+  width: 270px;
   top: 200px;
   left: 50%;
-  margin-left: -150px;
-  display: none;
+  margin-left: -135px;
+  color: #EEE;
+}
+#login-container>.heading {
+  padding: 6px 10px;
+}
+#login-container>.body {
+  position: relative;
+  padding: 10px;
+  margin-top: 3px;
+  background: rgba(0, 0, 0, 0.4);
+}
+
+
+#profile {
+  margin: 5px;
+  font-size: 12px;
+  position: absolute;
+  color: #CCC;
 }
 
 
@@ -53,6 +74,7 @@ textarea {
 
 .edit-wrapper {
   position: relative;
+  min-height: 20px;
 }
 .edit-wrapper>i {
   position: absolute;
@@ -72,35 +94,13 @@ textarea {
   position: fixed;
   top: 80px;
   left: 160px;
-  padding: 10px;
   min-height: 60px;
+  width: 224px;
   z-index: 100;
   font-weight: normal;
   color: #EEE;
 }
-.modal:before {
-  content: '';
-  width: 20px;
-  height: 5px;
-  left: -1px;
-  bottom: -1px;
-  position: absolute;
-  z-index: -1;
-  border-left: 1px solid rgba(255, 255, 255, .5);
-  border-bottom: 1px solid rgba(255, 255, 255, .5);
-}
-.modal:after {
-  content: '';
-  width: 100px;
-  height: 30px;
-  right: -1px;
-  bottom: -1px;
-  position: absolute;
-  z-index: -1;
-  border-right: 1px solid rgba(255, 255, 255, .5);
-  border-bottom: 1px solid rgba(255, 255, 255, .5);
-}
-.modal-drop {
+.drop-screen {
   position: fixed;
   z-index: 99;
   width: 100%;
@@ -111,32 +111,21 @@ textarea {
 }
 .modal>.close {
   position: absolute;
-  top: 11px;
-  right: 11px;
+  top: 1px;
+  right: 1px;
   font-size: 16px;
   color: #CCC;
 }
 .modal>.heading {
   font-size: 14px;
 }
-.modal>.body {
+.modal .body {
   margin-top: 8px;
+  padding: 4px 10px;
   position: relative;
-  padding: 4px;
   color: #EEE;
 }
-.modal>.body:before {
-  content: '';
-  width: 12px;
-  height: 30px;
-  top: -1px;
-  left: -1px;
-  position: absolute;
-  z-index: -1;
-  border-top: 1px solid rgba(255, 255, 255, .5);
-  border-left: 1px solid rgba(255, 255, 255, .5);
-}
-.modal>.body .input-field {
+.modal .body .input-field {
   background-color: transparent;
   border: 0;
   width: 200px;
@@ -146,33 +135,77 @@ textarea {
   color: #EEE;
   line-height: 17px;
 }
-.modal>.body .input-field:focus {
+.modal .body .input-field:focus {
   outline: 0;
 }
-.modal>.footer {
+.modal .footer, form .footer {
   font-size: 16px;
 }
-.modal>.footer>i {
-  display: block;
-  width: 50%;
+.modal .footer>button, .modal .footer>i, form .footer>button, form .footer>i {
+  display: inline-block;
+  width: 49%;
   cursor: pointer;
   opacity: 0.6;
   padding: 12px 0;
   text-align: center;
+  background-color: transparent;
+  border: 0;
 }
-.modal>.footer>i:hover {
+.modal .footer>button:hover, .modal .footer>i:hover, form .footer>button:hover, form .footer>i:hover {
   opacity: 1;
 }
-.modal>.footer>i:first-child {
-  float: left;
-}
-.modal>.footer>i:last-child {
-  float: right;
-}
-.modal>.footer:after {
-  clear: both;
-}
 
+
+
+
+.border-one, .border-two {
+  position: relative;
+}
+.border-one:before {
+  content: '';
+  width: 79px;
+  height: 6px;
+  bottom: -12px;
+  right: -1px;
+  position: absolute;
+  z-index: -1;
+  border-top: 5px solid rgba(255, 255, 255, .8);
+  border-left: 5px solid transparent;
+}
+.border-one:after {
+  content: '';
+  width: 130px;
+  height: 30px;
+  right: -1px;
+  bottom: -1px;
+  position: absolute;
+  z-index: -1;
+  border-right: 1px solid rgba(255, 255, 255, .8);
+  border-bottom: 1px solid rgba(255, 255, 255, .8);
+}
+.border-two:before {
+  content: '';
+  width: 12px;
+  height: 100%;
+  top: -1px;
+  left: -1px;
+  position: absolute;
+  z-index: -1;
+  border-top: 1px solid rgba(255, 255, 255, .8);
+  border-left: 1px solid rgba(255, 255, 255, .8);
+  border-bottom: 1px solid rgba(255, 255, 255, .8);
+}
+.border-two:after {
+  content: '';
+  width: 129px;
+  height: 25px;
+  right: -1px;
+  top: -1px;
+  position: absolute;
+  z-index: -1;
+  border-right: 1px solid rgba(255, 255, 255, .8);
+  border-top: 1px solid rgba(255, 255, 255, .8);
+}
 
 
 
@@ -187,12 +220,13 @@ textarea {
   transition: all 0.2s ease-out;
 }
 .popup>h4, .popup>div {
-  background-color: rgba(255, 252, 234, 0.85);
+  background-color: rgba(255, 252, 234, 0.9);
 }
 .popup>h4 {
   margin: 0;
   padding: 12px 12px;
   font-size: 14px;
+  margin-bottom: 3px;
 }
 .popup>.close {
   position: absolute;
@@ -207,8 +241,42 @@ textarea {
   line-height: 18px;
   font-size: 13px;
   min-height: 20px;
-  padding: 9px 12px;
-  margin: 3px 0 0 0;
+  padding: 9px 12px 12px 12px;
+  max-height: 360px;
+  overflow-y: scroll;
+}
+.popup ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.popup ul li {
+  margin: 0;
+  display: block;
+  float: left;
+  padding: 5px 0 7px 0;
+  width: 25%;
+  color: #EEE;
+  cursor: pointer;
+  position: relative;
+  text-align: center;
+}
+.popup ul li.active {
+  color: #000 !important;
+  background-color: rgba(255, 252, 234, 0.9);
+  font-size: 16px;
+  padding-top: 0;
+}
+.popup ul li.active:after {
+  content: '';
+  width: 20px;
+  height: 0px;
+  bottom: -3px;
+  right: 0;
+  position: absolute;
+  z-index: -1;
+  border-top: 3px solid rgba(255, 252, 234, 0.9);
+  border-left: 3px solid transparent;
 }
 .popup>h4.normal:before {
   content: '';
@@ -218,7 +286,7 @@ textarea {
   left: -11px;
   position: absolute;
   z-index: -1;
-  border-right: 5px solid rgba(255, 252, 234, 0.85);
+  border-right: 5px solid rgba(255, 252, 234, 0.9);
   border-bottom: 5px solid transparent;
 }
 .popup>h4.flipped:before {
@@ -229,7 +297,7 @@ textarea {
   right: -11px;
   position: absolute;
   z-index: -1;
-  border-left: 5px solid rgba(255, 252, 234, 0.85);
+  border-left: 5px solid rgba(255, 252, 234, 0.9);
   border-bottom: 5px solid transparent;
 }
 .popup>.footer {
@@ -262,6 +330,10 @@ textarea {
 .stop-hover:hover {
   color: #C92F2F;
   cursor: pointer;
+}
+
+.thin {
+  font-weight: 100;
 }
 
 

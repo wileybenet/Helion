@@ -5,8 +5,10 @@ var processInfo = require('./app/process.info'),
   models = require('./app/models'),
   api, server;
 
-store.connect({path: './config.json'})
-  .then(function(store) {
+store.connect({
+  path: './config.json',
+  updateBackups: true
+}).then(function(store) {
     models.bind(store);
 
     server = new Server({
@@ -15,8 +17,7 @@ store.connect({path: './config.json'})
       sessionId: '_helion',
       resources: [
         'user',
-        'body',
-        'collection'
+        'body'
       ]
     });
   });

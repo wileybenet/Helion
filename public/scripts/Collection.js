@@ -31,32 +31,13 @@ angular.module('Collection', ['Body'])
           }
         });
         Canvas.background.addChild(this.path);
-
-        this.path.onMouseEnter = this.onMouseEnter.bind(this);
-        this.path.onMouseLeave = this.onMouseLeave.bind(this);
-      } else {
-        this.bodies[0].path.onMouseEnter = this.onMouseEnter.bind(this);
-        this.bodies[0].path.onMouseLeave = this.onMouseLeave.bind(this);
       }
-    };
-
-    Collection.prototype.onMouseEnter = function() {
-      this.bodies.forEach(function(body) {
-
-      });
-    };
-
-    Collection.prototype.onMouseLeave = function() {
-      this.bodies.forEach(function(body) {
-
-      });
     };
 
     Collection.prototype.updateBounds = function() {
       var radius = Utils.circumscribeRadius(this.paths.bounds);
       this.path.position = this.paths.bounds.center;
       this.path.scale(radius/this.path.radius);
-      this.path.radius = radius;
     };
 
     Collection.query = resource.query;

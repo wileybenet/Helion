@@ -1,32 +1,25 @@
 // libraries
-var _ = require('lodash-node'),
+var fs = require('fs'),
+  _ = require('lodash-node'),
   bcrypt = require('bcrypt'),
   storeApi = require('./store');
 
-// models
-exports.User = function User(data) {
-  _.extend(this, data);
-  this.password = bcrypt.hashSync(this.password, 8);
-  return this;
-}
-exports.User.prototype.validPassword = function validPassword(password) {
-  return bcrypt.compareSync(password, this.password);
-};
-
-exports.Body = function Body(data) {
-  _.extend(this, data);
-  return this;
-}
-
-exports.Collection = function Collection(data) {
-  _.extend(this, data);
-  return this;
-}
+fs.readdirSync(__dirname + '/models')
+  .forEach(function(name) {
+    var model = name.split('.')[0];
+    exports[model] = require('./models/' + name);
+  });
 
 // module api
 exports.get = function get(type) {
   return exports[type.charAt(0).toUpperCase() + type.substr(1)];
 };
+
+exports.all = function all() {
+  return _.filter(exports, function(fn) {
+    return fn.name.match(/^[A-Z]/);
+  });
+}
 
 exports.bind = function bind(store) {
   var model, fn, params;
@@ -43,6 +36,12 @@ exports.bind = function bind(store) {
       (function(Model) {
         Model.load = function(data) {
           return _.extend(Object.create(Model.prototype), data);
+        };
+        Model.prototype.save = Model.prototype.save || function() {
+          if (this._id)
+            Model.update(this._id, this);
+          else
+            Model.create(this);
         };
       }(exports[model]));
     }

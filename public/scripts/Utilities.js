@@ -1,4 +1,4 @@
-angular.module('Utilities', ['directives', 'filters'])
+angular.module('Utilities', ['directives', 'filters', 'factories'])
   .factory('Bus', [function() {
     var listeners = {
       data: [],

@@ -1,0 +1,23 @@
+<div id="login-container" class="border-one">
+  <div class="heading">
+    <i class="fa fa-sign-in"></i> Authorize
+  </div>
+  <div class="body border-two">
+    <form class="trans" name="login_form" data-ng-submit="login(access)">
+      <div class="error" data-ng-if="error">
+        <i class="fa fa-warning"></i>
+        <span data-ng-bind="error"></span>
+      </div>
+      <div class="row">
+        <input type="text" data-ng-model="access.username" placeholder="Username" data-focus="$root.loginPrompt" />
+      </div>
+      <div class="row">
+        <input type="password" data-ng-model="access.password" placeholder="Password" />
+      </div>
+      <div class="footer">
+        <i tabindex="-1" class="fa fa-times stop" data-ng-click="$root.loginPrompt = false"></i>
+        <button type="submit" class="go fa fa-check-square-o" data-ng-click="lo" data-ng-disabled="!login_form.$dirty"></button>
+      </div>
+    </form>
+  </div>
+</div>

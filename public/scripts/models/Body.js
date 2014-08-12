@@ -3,11 +3,11 @@ angular.module('Body', [])
     var endpoint = '/api/v1/body/:id',
       createReadApi = Resource(endpoint, {}, {});
 
-    Base.extend({
-      query: createReadApi.query,
-      save: createReadApi.save
+    return Base.extend({
+      all: createReadApi.query,
+      create: createReadApi.save
     }, {
-      initialize: function Body(name, model) {
+      initialize: function Body(model) {
         var this_ = this,
           radius = model.radius,
           options = model.options || {},
@@ -15,7 +15,7 @@ angular.module('Body', [])
 
         this.model = new resource(model);
 
-        this.name = name;
+        this.name = model.name;
         this.color = Utils.luminosity(options.fill, 0);
         this.styles = {};
         this.object = new Path.Circle({

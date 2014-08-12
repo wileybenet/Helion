@@ -1,8 +1,9 @@
 <!DOCTYPE html>
-<html data-ng-app="Helion">
+<html data-ng-app="Helion" data-ng-controller="AppCtrl">
 <head>
   <title>Helion</title>
   <link rel="stylesheet" type="text/css" href="static/css/main.css">
+  <link rel="stylesheet" type="text/css" href="static/css/form.css">
   <link rel="stylesheet" type="text/css" href="static/css/font-awesome.min.css">
   <script type="text/javascript" src="scripts/lib/es5-shim.js"></script>
   <script type="text/javascript" src="scripts/lib/lodash.js"></script>
@@ -11,29 +12,36 @@
   <script type="text/javascript" src="scripts/lib/angular.js"></script>
   <script type="text/javascript" src="scripts/lib/angular-resource.js"></script>
   <script type="text/javascript" src="scripts/directives.js"></script>
+  <script type="text/javascript" src="scripts/factories.js"></script>
   <script type="text/javascript" src="scripts/filters.js"></script>
+  <script type="text/javascript" src="scripts/core.js"></script>
+  <script type="text/javascript" src="scripts/models/Base.js"></script>
   <script type="text/javascript" src="scripts/Utilities.js"></script>
   <script type="text/javascript" src="scripts/Canvas.js"></script>
-  <script type="text/javascript" src="scripts/Body.js"></script>
+  <script type="text/javascript" src="scripts/models/Body.js"></script>
   <script type="text/javascript" src="scripts/Mover.js"></script>
   <script type="text/javascript" src="scripts/Collection.js"></script>
   <script type="text/javascript" src="scripts/System.js"></script>
   <script type="text/javascript" src="scripts/app.js"></script>
 </head>
   <body data-ng-controller="CanvasCtrl">
+    <div id="profile" data-ng-if="$root.user">
+      {{$root.user.username}}
+      <a href="" data-ng-click="$root.user.$logout()">
+        <i class="stop fa fa-sign-out"></i>
+      </a>
+    </div>
     <canvas id="main-canvas" resize></canvas>
     <div class="spinner-center" data-ng-if="!canvasLoaded">
       <i class="fa fa-circle-o-notch fa-spin"></i>
     </div>
     <div class="spinner-bottom-right">
-      <a href="" data-ng-click="loginPrompt = true">
-        <i class="go fade fa" data-ng-class="{'fa-unlock-alt': $root.loggedIn, 'fa-lock': !$root.loggedIn}"></i>
+      <a href="" data-ng-click="$root.loginPrompt = !$root.user">
+        <i class="fade fa" data-ng-class="{'go fa-unlock-alt': $root.user, 'stop fa-lock': !$root.user}"></i>
       </a>
       <i class="go fade fa" data-ng-class="{'fa-circle-o-notch fa-spin': $root.saving, 'fa-check': !$root.saving}"></i>
     </div>
-    <div id="login-container" data-ng-hide="!loginPrompt || $root.loggedIn">
-      
-    </div>
+    <div class="drop-screen" data-ng-if="$root.loginPrompt" data-ng-include="'static/html/login.html'" data-ng-controller="LoginCtrl"></div>
     <div class="popup" data-canvas-popup="popupInfo" data-ng-if="popupInfo.model"></div>
   </body>
 </html>

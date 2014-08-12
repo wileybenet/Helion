@@ -33,8 +33,28 @@ KeyValueStore.prototype.put = function put(key, value, cbFn) {
 
 // module api
 module.exports = {
+  updateBackups: function(s3, bucketName) {
+    s3.listObjects({Bucket: bucketName}, function(err, response) {
+      console.log(' S3 backups');
+      response.Contents
+        .filter(function(item) {
+          return !item.Key.match(/^\.|backup$/);
+        })
+        .map(function(item) {
+          return item.Key;
+        })
+        .forEach(function(key) {
+          s3.getObject({Bucket: bucketName, Key: key}, function(err, data) {
+            s3.putObject({Bucket: bucketName, Key: key + '.backup'}, function(err, res) {
+              console.log('  updated :' + key + '.backup');
+            });
+          });
+        });
+    });
+  },
   connect: function(config) {
-    var deferred = Q.defer();
+    var this_ = this,
+      deferred = Q.defer();
     if (config.path)
       AWS.config.loadFromPath(config.path);
     if (config.creds)
@@ -47,25 +67,9 @@ module.exports = {
           keyValStore = new KeyValueStore(s3, bucketName, data);
         console.log(' S3 connected\n  ' + keyValStore.name);
         deferred.resolve(keyValStore);
-      });
-
-      s3.listObjects({Bucket: bucketName}, function(err, response) {
-        console.log(' S3 backups');
-        response.Contents
-          .filter(function(item) {
-            return !item.Key.match(/^\.|backup$/);
-          })
-          .map(function(item) {
-            return item.Key;
-          })
-          .forEach(function(key) {
-            s3.getObject({Bucket: bucketName, Key: key}, function(err, data) {
-              s3.putObject({Bucket: bucketName, Key: key + '.backup'}, function(err, res) {
-                console.log('  updated :' + key + '.backup');
-              });
-            });
-          });
-      });
+      });  
+      if (config.updateBackups)
+        this_.updateBackups(s3, bucketName);
     });
     return deferred.promise;
   }

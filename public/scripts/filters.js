@@ -6,7 +6,10 @@ angular.module('filters', [])
   }])
   .filter('htmlFormatted', ['$sce', function($sce) {
     return function(str) {
-      str = (str || '').replace(/\n/g, '<br />');
+      str = (str || '').toString().replace(/\n/g, '<br />');
       return $sce.trustAsHtml(str);
     };
+  }])
+  .filter('int', [function() {
+    return parseInt;
   }]);

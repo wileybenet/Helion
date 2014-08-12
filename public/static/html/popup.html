@@ -1,0 +1,32 @@
+<span class="close stop-hover" data-ng-click="data.model = null">
+  <i class="fa fa-times"></i>
+</span>
+<h4 data-edit="data.model.name" data-ng-class="{flipped: flipped, normal: !flipped}">
+  {{data.model.name}} <span class="thin">{{tab}}</span>
+</h4>
+<div class="body" data-ng-hide="tab !== 'Overview'" data-edit="data.model.description">
+  <span data-ng-bind-html="data.model.description | htmlFormatted"></span>
+</div>
+<div class="body" data-ng-hide="tab !== 'Culture'" data-edit="data.model.culture">
+  <span data-ng-bind-html="data.model.culture | htmlFormatted"></span>
+</div>
+<div class="body" data-ng-hide="tab !== 'Military'" data-edit="data.model.military">
+  <span data-ng-bind-html="data.model.military | htmlFormatted"></span>
+</div>
+<div class="body" data-ng-hide="tab !== 'Specs'">
+  <div data-edit="data.model.position[0]" data-type="number">
+    X: <span>{{data.model.position[0] | int}}</span>
+  </div>
+  <div data-edit="data.model.position[1]" data-type="number">
+    Y: <span>{{data.model.position[1] | int}}</span>
+  </div>
+  <div data-edit="data.model.radius" data-type="number">
+    Radius: <span>{{data.model.radius}}</span>
+  </div>
+</div>
+<ul data-ng-init="tab = 'Overview'">
+  <li data-ng-class="{active: tab === 'Overview'}" data-ng-click="tab = 'Overview'"><a class="fa fa-globe"></a></li>
+  <li data-ng-class="{active: tab === 'Culture'}" data-ng-click="tab = 'Culture'"><a class="fa fa-university"></a></li>
+  <li data-ng-class="{active: tab === 'Military'}" data-ng-click="tab = 'Military'"><a class="fa fa-space-shuttle"></a></li>
+  <li data-ng-class="{active: tab === 'Specs'}" data-ng-click="tab = 'Specs'"><a class="fa fa-gears"></a></li>
+</ul>

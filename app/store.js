@@ -12,7 +12,7 @@ var api = module.exports = {
       if (item)
         deferred.resolve(item);
       else
-        deferred.reject('does not exist');
+        deferred.reject(null);
     }, deferred.reject);
     return deferred.promise;
   },
@@ -64,15 +64,14 @@ var api = module.exports = {
     }, deferred.reject);
     return deferred.promise;
   },
-  create: function create(data) {
+  create: function create(model) {
     var this_ = this,
-      deferred = Q.defer(),
-      item = new this.Model(data);
+      deferred = Q.defer();
     api.all.call(this).then(function(arr) {
-      item._id = uuid.v4();
-      arr.push(item);
+      model._id = uuid.v4();
+      arr.push(model);
       api._persist.call(this_, arr).then(function() {
-        deferred.resolve(item);
+        deferred.resolve(model);
       }, deferred.reject);
     });
     return deferred.promise;
