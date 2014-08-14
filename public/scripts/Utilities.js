@@ -17,11 +17,14 @@ angular.module('Utilities', ['directives', 'filters', 'factories'])
         listeners.frame.push(cbFn);
       },
       '$init': function() {
-        view.onFrame = function(evt) {
+        // view.onFrame = function(evt) {
+        setInterval(function() {
           listeners.frame.forEach(function(fn) {
-            fn(evt);
+            fn();
           });
-        };
+          paper.view.draw();
+        }, 100);
+        // };
       }
     };
   }])

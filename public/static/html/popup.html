@@ -14,15 +14,20 @@
   <span data-ng-bind-html="data.model.military | htmlFormatted"></span>
 </div>
 <div class="body" data-ng-hide="tab !== 'Specs'">
-  <div data-edit="data.model.position[0]" data-type="number">
-    X: <span>{{data.model.position[0] | int}}</span>
-  </div>
-  <div data-edit="data.model.position[1]" data-type="number">
-    Y: <span>{{data.model.position[1] | int}}</span>
-  </div>
-  <div data-edit="data.model.radius" data-type="number">
-    Radius: <span>{{data.model.radius}}</span>
-  </div>
+  <table class="data-table">
+    <tr>
+      <td class="data-label">Orbit</td>
+      <td class="data-content" data-edit="data.model.position[0]" data-type="number">{{data.model.position[0] | int}} au</td>
+    </tr>
+    <tr>
+      <td class="data-label">Position</td>
+      <td class="data-content" data-edit="data.model.position[1]" data-type="number">{{((data.model.position[1] | int) / 1000 * 360).toFixed(0)}}&#176;</td>
+    </tr>
+    <tr>
+      <td class="data-label">Mass</td>
+      <td class="data-content" data-edit="data.model.radius" data-type="number">{{(((data.model.radius | int) | math:'pow':4)/ 512504300).toExponential(3)}} M<sub>&#8857;</sub></td>
+    </tr>
+  </table>
 </div>
 <ul data-ng-init="tab = 'Overview'">
   <li data-ng-class="{active: tab === 'Overview'}" data-ng-click="tab = 'Overview'"><a class="fa fa-globe"></a></li>

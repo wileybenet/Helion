@@ -1,6 +1,6 @@
 angular.module('Mover', [])
   .service('Mover', ['Base', 'Canvas', 'Bus', 'Utils', function(Base, Canvas, Bus, Utils) {
-    var SPEED = 0.3;
+    var SPEED = .4;
 
     function getEntropy() {
       var side = Math.random() - 0.5;
@@ -19,6 +19,8 @@ angular.module('Mover', [])
     };
 
     return Base.extend({
+      all: function() {}
+    }, {
       initialize: function Mover(start, options) {
         this.position = start.object.bounds.center
         this.waypoints = [start];

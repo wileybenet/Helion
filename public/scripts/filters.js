@@ -12,4 +12,9 @@ angular.module('filters', [])
   }])
   .filter('int', [function() {
     return parseInt;
+  }])
+  .filter('math', [function() {
+    return function(num, fn, option) {
+      return Math[fn](num, option);
+    };
   }]);
