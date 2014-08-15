@@ -15,3 +15,29 @@ build:
         code: |
           echo "node version $(node -v) running"
           echo "npm version $(npm -v) running"
+
+deploy:
+  steps:
+    - add-to-known_hosts:
+        hostname: helion.bmdware.com
+    - mktemp:
+        envvar: PRIVATEKEY_PATH
+    - create-file:
+        name: write key
+        filename: $PRIVATEKEY_PATH
+        content: $WERCKER_PRIVATE
+        overwrite: true
+    - script:
+        name: transfer application
+        code: |
+          pwd
+          ls -la
+          scp -i $PRIVATEKEY_PATH app.js package.json root@helion.bmdware.com:/var/local/www
+    - script:
+        name: npm install
+        code: ssh -i $PRIVATEKEY_PATH -l root helion.bmdware.com "cd /var/local/www/ && npm install --production"
+    - script:
+        name: start application
+        code: |
+          ssh -i $PRIVATEKEY_PATH -l root helion.bmdware.com "if [[ \"\$(status node-app)\" = *start/running* ]]; then stop node-app -n ; fi"
+          ssh -i #PRIVATEKEY_PATH -l root helion.bmdware.com start node-app
