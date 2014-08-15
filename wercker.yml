@@ -40,4 +40,4 @@ deploy:
         name: start application
         code: |
           ssh -i $PRIVATEKEY_PATH -l root helion.bmdware.com "if [[ \"\$(status node-app)\" = *start/running* ]]; then stop node-app -n ; fi"
-          ssh -i #PRIVATEKEY_PATH -l root helion.bmdware.com start node-app
+          ssh -i $PRIVATEKEY_PATH -l root helion.bmdware.com start node-app
