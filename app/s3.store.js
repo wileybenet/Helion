@@ -45,7 +45,7 @@ module.exports = {
         })
         .forEach(function(key) {
           s3.getObject({Bucket: bucketName, Key: key}, function(err, data) {
-            s3.putObject({Bucket: bucketName, Key: key + '.backup'}, function(err, res) {
+            s3.putObject({Bucket: bucketName, Key: key + '.backup', Body: data.Body.toString()}, function(err, res) {
               console.log('  updated :' + key + '.backup');
             });
           });
@@ -54,13 +54,16 @@ module.exports = {
   },
   connect: function(config) {
     var this_ = this,
-      deferred = Q.defer();
+      deferred = Q.defer(),
+      s3;
     if (config.path)
       AWS.config.loadFromPath(config.path);
     if (config.creds)
       AWS // backlogged
     s3 = new AWS.S3();
     s3.listBuckets(function(err, data) {
+      if (err)
+        return console.log('CONNECTION ERROR :', err);
       bucketName = data.Buckets[0].Name;
       s3.getObject({Bucket: bucketName, Key: '.ds'}, function(err, data) {
         var data = JSON.parse(data.Body.toString()),

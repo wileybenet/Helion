@@ -16,7 +16,7 @@
       </div>
       <div class="footer">
         <i tabindex="-1" class="fa fa-times stop" data-ng-click="$root.loginPrompt = false"></i>
-        <button type="submit" class="go fa fa-check-square-o" data-ng-click="lo" data-ng-disabled="!login_form.$dirty"></button>
+        <button type="submit" class="go fa fa-check-square-o" data-ng-class="{'fa-circle-o-notch fa-spin': authenticating}" data-ng-disabled="!login_form.$dirty"></button>
       </div>
     </form>
   </div>

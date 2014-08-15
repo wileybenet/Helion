@@ -1,4 +1,4 @@
-angular.module('Helion', ['ngResource', 'core', 'Mover', 'Canvas', 'System', 'Base', 'Utilities'])
+angular.module('Helion', ['ngResource', 'core', 'Canvas', 'System', 'Utilities'])
   .config([function() {
     paper.install(window);
     var tool = new Tool();
@@ -10,8 +10,8 @@ angular.module('Helion', ['ngResource', 'core', 'Mover', 'Canvas', 'System', 'Ba
       }
     };
   }])
-  .controller('CanvasCtrl', ['$scope', '$q', 'Collection', 'Body', 'Mover', 'Canvas', 'System', 'Bus',
-  function($scope, $q, Collection, Body, Mover, Canvas, System, Bus) {
+  .controller('CanvasCtrl', ['$scope', '$q', 'Body', 'Mover', 'Canvas', 'System', 'Bus',
+  function($scope, $q, Body, Mover, Canvas, System, Bus) {
     Canvas.$init();
     Bus.$init();
     Bus.onData(function(data) {

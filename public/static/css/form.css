@@ -45,8 +45,8 @@ form.trans .row input {
   border: 0;
 }
 form.trans .error {
-  background-color: rgba(255, 56, 56, 0.76);
+  background-color: #FFF;
 }
 form.trans .error * {
-  color: #000;
+  color: #D10000;
 }
