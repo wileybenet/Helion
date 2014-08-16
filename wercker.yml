@@ -32,10 +32,10 @@ deploy:
         code: |
           pwd
           ls -la
-          scp -i $PRIVATEKEY_PATH root@helion.bmdware.com:/var/local/www
+          scp -r $PRIVATEKEY_PATH root@helion.bmdware.com:/var/local/www
     - script:
         name: npm install
-        code: ssh -r $PRIVATEKEY_PATH -l root helion.bmdware.com "cd /var/local/www/ && npm install --production"
+        code: ssh -i $PRIVATEKEY_PATH -l root helion.bmdware.com "cd /var/local/www/ && npm install --production"
     - script:
         name: start application
         code: |
