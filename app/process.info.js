@@ -1,5 +1,15 @@
 var os = require('os'),
   _ = require('lodash-node');
+
+function args(match) {
+  var matchedArg;
+  process.argv.forEach(function(arg) {
+    if (arg.replace('--', '') === match.replace('--', '')) {
+      matchedArg = arg
+    }
+  });
+  return matchedArg;
+}
   
 module.exports = {
   ipAddress: _.chain(os.networkInterfaces())
@@ -8,5 +18,5 @@ module.exports = {
     .find({family: 'IPv4', internal: false})
     .value()
     .address,
-  port: process.argv[2] === '--production' ? 80 : 8000
+  port: args('production') ? 80 : 8000
 };
