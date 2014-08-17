@@ -1,6 +1,6 @@
 {
   "name": "Helion",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Helion System Web App",
   "main": "app/server.js",
   "dependencies": {
@@ -22,7 +22,7 @@
   },
   "scripts": {
     "start": "node app",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "grunt"
   },
   "repository": {
     "type": "git",
