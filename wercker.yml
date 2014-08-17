@@ -38,12 +38,7 @@ deploy:
         name: npm install
         code: ssh -i $PRIVATEKEY_PATH -l root helion.bmdware.com "cd /var/local/www/ && npm install --production"
     - script:
-        name: npm install forever
-        code: ssh -i $PRIVATEKEY_PATH -l root helion.bmdware.com "cd /var/local/www/ && sudo npm install forever -g"
-    - script:
         name: start application
         code: |
-          ssh -i $PRIVATEKEY_PATH -l root helion.bmdware.com "cd /var/local/www/ && forever app --production"
-
-          # ssh -i $PRIVATEKEY_PATH -l root helion.bmdware.com "if [[ \"\$(status node-app)\" = *start/running* ]]; then stop node-app -n ; fi"
-          # ssh -i $PRIVATEKEY_PATH -l root helion.bmdware.com start node-app
+          ssh -i $PRIVATEKEY_PATH -l root helion.bmdware.com "if [[ \"\$(status node-app)\" = *start/running* ]]; then stop node-app -n ; fi"
+          ssh -i $PRIVATEKEY_PATH -l root helion.bmdware.com start node-app
