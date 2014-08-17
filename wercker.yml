@@ -3,7 +3,7 @@ box: wercker/nodejs
 build:
   # The steps that will be executed on build
   steps:
-    - install-grunt:
+    - script:
         name: install grunt
         code: npm install grunt-cli -g
     # A step that executes `npm install` command
