@@ -13,7 +13,7 @@ store.connect({
 
     server = new Server({
       ip: null,
-      port: 8000,
+      port: processInfo.port,
       sessionId: '_helion',
       resources: [
         'user',

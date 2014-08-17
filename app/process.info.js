@@ -7,5 +7,6 @@ module.exports = {
     .flatten()
     .find({family: 'IPv4', internal: false})
     .value()
-    .address
+    .address,
+  port: process.env.PORT || 8000
 };
