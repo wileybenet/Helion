@@ -21,7 +21,6 @@
     "grunt-jasmine-node": "^0.2.1"
   },
   "scripts": {
-    "start": "PORT=80 node app",
     "test": "grunt"
   },
   "repository": {

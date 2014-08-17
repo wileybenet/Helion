@@ -8,5 +8,5 @@ module.exports = {
     .find({family: 'IPv4', internal: false})
     .value()
     .address,
-  port: process.env.PORT || 8000
+  port: process.argv[2] === '--production' ? 80 : 8000
 };
