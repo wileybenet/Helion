@@ -1,18 +1,13 @@
 box: wercker/nodejs
-# Build definition
+
 build:
-  # The steps that will be executed on build
+
   steps:
     - script:
         name: install grunt
-        code: npm install grunt-cli -g
-    # A step that executes `npm install` command
+        code: sudo npm install grunt-cli -g
     - npm-install
-    # A step that executes `npm test` command
     - npm-test
-
-    # A custom script step, name value is used in the UI
-    # and the code value contains the command that get executed
     - script:
         name: echo nodejs information
         code: |
@@ -45,7 +40,7 @@ deploy:
     - script:
         name: start application
         code: |
-          ssh -i $PRIVATEKEY_PATH -l root helion.bmdware.com "cd /var/local/www/ && npm start"
+          ssh -i $PRIVATEKEY_PATH -l root helion.bmdware.com "cd /var/local/www/ && npm start-prod"
 
           # ssh -i $PRIVATEKEY_PATH -l root helion.bmdware.com "if [[ \"\$(status node-app)\" = *start/running* ]]; then stop node-app -n ; fi"
           # ssh -i $PRIVATEKEY_PATH -l root helion.bmdware.com start node-app
