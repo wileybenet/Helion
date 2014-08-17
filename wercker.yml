@@ -34,12 +34,15 @@ deploy:
           ls -la
           scp -i $PRIVATEKEY_PATH -r $WERCKER_SOURCE_DIR root@helion.bmdware.com:/var/local/www
     - script:
+        name: npm configuration
+        code: ssh -i $PRIVATEKEY_PATH -l root helion.bmdware.com "cd /var/local/www/ && npm config ls -l"
+    - script:
         name: npm install
         code: ssh -i $PRIVATEKEY_PATH -l root helion.bmdware.com "cd /var/local/www/ && npm install --production"
     - script:
         name: start application
         code: |
-          ssh -i $PRIVATEKEY_PATH -l root helion.bmdware.com "cd /var/local/www/ && node app"
+          ssh -i $PRIVATEKEY_PATH -l root helion.bmdware.com "cd /var/local/www/ && npm start"
 
           # ssh -i $PRIVATEKEY_PATH -l root helion.bmdware.com "if [[ \"\$(status node-app)\" = *start/running* ]]; then stop node-app -n ; fi"
           # ssh -i $PRIVATEKEY_PATH -l root helion.bmdware.com start node-app
