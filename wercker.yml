@@ -30,6 +30,7 @@ deploy:
         code: |
           pwd
           ls -la
+          ssh -i $PRIVATEKEY_PATH -l root helion.bmdware.com "rm -r /var/local/www"
           scp -i $PRIVATEKEY_PATH -r $WERCKER_SOURCE_DIR root@helion.bmdware.com:/var/local/www
     - script:
         name: npm configuration
