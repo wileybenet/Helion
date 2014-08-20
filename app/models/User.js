@@ -1,27 +1,32 @@
-// libraries
-var _ = require('lodash-node'),
+var mongoose = require('mongoose'),
   bcrypt = require('bcrypt');
 
-// helper
-function hash(password) {
-  return bcrypt.hashSync(password, 8);
-}
-
-// module constructor
-function User(data) {
-  _.extend(this, data);
-  this.password = hash(this.password);
-  return this;
-}
-User.prototype.validPassword = function validPassword(password) {
+// model schema
+var schema = mongoose.Schema({
+  username: String,
+  password: {
+    type: String,
+    set: function set(password) {
+      return bcrypt.hashSync(password, 8);
+    }
+  },
+  authorization: {
+    type: String,
+    default: 'basic'
+  }
+}, {
+  collection: 'User'
+});
+schema.methods.validPassword = function validPassword(password) {
   return bcrypt.compareSync(password, this.password);
 };
-User.prototype.changePassword = function changePassword(password) {
-  this.password = hash(this.password);
+schema.methods.changePassword = function changePassword(password) {
+  this.password = bcrypt.hashSync(this.password, 8);
   this.save();
 };
-User.prototype.resetPassword = function resetPassword() {
+schema.methods.resetPassword = function resetPassword() {
   //
 };
 
-module.exports = User;
+var User = module.exports = mongoose.model('User', schema);
+

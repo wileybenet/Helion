@@ -19,19 +19,21 @@ var session = module.exports = {
   authenticate: function(req, res, next) {
     if (req.user && req.user._id)
       return res.end('already authenticated');
-    User.findWhere({username: req.body.username})
-      .then(function(user) {
-        if (user && user.validPassword(req.body.password)) {
-          req.user = user;
-        } else {
+    User.findOne({ username: req.body.username })
+      .exec(function(err, user) {
+        if (err) {
           res.send({ error: 'incorrect username or password' });
-          res.end()
+          res.end();
+          return next();
+        } else {
+          if (user && user.validPassword(req.body.password)) {
+            req.user = user;
+          } else {
+            res.send({ error: 'incorrect username or password' });
+            res.end()
+          }
+          next();
         }
-        next();
-      }, function(err) {
-        res.send({ error: 'incorrect username or password' });
-        res.end();
-        return next();
       });
   },
   authorize: function(level) {
@@ -58,11 +60,13 @@ var session = module.exports = {
   },
   current: function(req, res) {
     if (req.user && req.user._id) {
-      User.find(req.user._id).then(function(user) {
-        res.send(user);
-        res.end();
-      }, function(err) {
-        res.end(err);
+      User.findById(req.user._id).exec(function(err, user) {
+        if (err) {
+          res.end(err);
+        } else {
+          res.send(user);
+          res.end();
+        }
       });
     } else {
       res.send({error: 'no session'});

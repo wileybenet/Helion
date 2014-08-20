@@ -1,5 +1,5 @@
 {
-  "accessKeyId": "AKIAJKNGZMYHGYVZEGIA",
-  "secretAccessKey": "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",
-  "region": "us-west-2"
+  "username": "root",
+  "password": "cronusistheone",
+  "dbName": "bmdware_dev"
 }

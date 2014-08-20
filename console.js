@@ -1,11 +1,11 @@
-var store = require('./app/s3.store'),
+var store = require('./app/store/mongo.store'),
   models = require('./app/models');
 
-store.connect({path: './config.json'})
-  .then(function(store) {
-    models.bind(store);
-  });
-
-models.all().forEach(function(Model) {
-  global[Model.name] = Model;
+store.connect({
+  path: 'config.json'
+}).then(function() {
+  for (var model in models) {
+    global[model] = models[model];
+  }
+  console.log('models loaded');
 });

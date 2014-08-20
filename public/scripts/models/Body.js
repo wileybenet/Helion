@@ -10,7 +10,7 @@ angular.module('Body', [])
       initialize: function Body(model) {
         var this_ = this,
           radius = model.radius,
-          options = model.options || {},
+          options = model.config || {},
           resource = Resource(endpoint, { id: '@_id' }, {});
 
         this.model = new resource(model);

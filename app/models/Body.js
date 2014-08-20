@@ -1,10 +1,16 @@
-// libraries
-var _ = require('lodash-node');
+var mongoose = require('mongoose');
 
-// module constructor
-function Body(data) {
-  _.extend(this, data);
-  return this;
-}
+// model schema
+var schema = mongoose.Schema({
+  name: String,
+  position: [Number],
+  radius: Number,
+  config: {},
+  copy: {
+    // description, culture, military
+  }
+}, {
+  collection: 'Body'
+});
 
-module.exports = Body;
+var Body = module.exports = mongoose.model('Body', schema);

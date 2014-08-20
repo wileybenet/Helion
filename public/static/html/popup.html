@@ -4,14 +4,14 @@
 <h4 data-edit="data.model.name" data-ng-class="{flipped: flipped, normal: !flipped}">
   {{data.model.name}} <span class="thin">{{tab}}</span>
 </h4>
-<div class="body" data-ng-hide="tab !== 'Overview'" data-edit="data.model.description">
-  <span data-ng-bind-html="data.model.description | htmlFormatted"></span>
+<div class="body" data-ng-hide="tab !== 'Overview'" data-edit="data.model.copy.description">
+  <span data-ng-bind-html="data.model.copy.description | htmlFormatted"></span>
 </div>
-<div class="body" data-ng-hide="tab !== 'Culture'" data-edit="data.model.culture">
-  <span data-ng-bind-html="data.model.culture | htmlFormatted"></span>
+<div class="body" data-ng-hide="tab !== 'Culture'" data-edit="data.model.copy.culture">
+  <span data-ng-bind-html="data.model.copy.culture | htmlFormatted"></span>
 </div>
-<div class="body" data-ng-hide="tab !== 'Military'" data-edit="data.model.military">
-  <span data-ng-bind-html="data.model.military | htmlFormatted"></span>
+<div class="body" data-ng-hide="tab !== 'Military'" data-edit="data.model.copy.military">
+  <span data-ng-bind-html="data.model.copy.military | htmlFormatted"></span>
 </div>
 <div class="body" data-ng-hide="tab !== 'Specs'">
   <table class="data-table">
