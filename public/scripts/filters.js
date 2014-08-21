@@ -17,4 +17,11 @@ angular.module('filters', [])
     return function(num, fn, option) {
       return Math[fn](num, option);
     };
+  }])
+  .filter('exp', ['$sce', function($sce) {
+    return function(str, suffix) {
+      return $sce.trustAsHtml((str || '').replace(/e(.+)/, function(fullStr, match) {
+        return ' &times 10<sup>'+match+'</sup>';
+      }) + suffix);
+    };
   }]);

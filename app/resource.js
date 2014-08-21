@@ -4,8 +4,11 @@ var models = require('./models');
 // helper
 function cbFn(res) {
   return function(err, data) {
-    res.send(data);
-    res.end();
+    if (err) {
+      res.status(500).send(err).end();
+    } else {
+      res.send(data).end();
+    }
   };
 }
 
@@ -21,10 +24,14 @@ module.exports = function(app, session) {
         Model.findById(req.params.id).exec(cbFn(res));
       });
       app.post(endpoint + name, session.authorize('admin'), function(req, res) {
-        new Model(req.body).save(cbFn(res));
+        var model = new Model(req.body)
+        model.save(function(err) {
+          cbFn(res)(err, model);
+        });
       });
       app.put(endpoint + name + '/:id', session.authorize('admin'), function(req, res) {
-        Model.update({ _id: req.params.id }, { $set: req.body }).exec(cbFn(res));
+        delete req.body._id;
+        Model.findByIdAndUpdate(req.params.id, { $set: req.body }).exec(cbFn(res));
       });
       app.delete(endpoint + name + '/:id', session.authorize('admin'), function(req, res) {
         Model.findByIdAndRemove(req.params.id).exec(cbFn(res));

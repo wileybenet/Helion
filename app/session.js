@@ -27,6 +27,7 @@ var session = module.exports = {
           return next();
         } else {
           if (user && user.validPassword(req.body.password)) {
+            console.log(user);
             req.user = user;
           } else {
             res.send({ error: 'incorrect username or password' });
@@ -41,20 +42,20 @@ var session = module.exports = {
       if (req.user && _.contains([].concat(level), req.user.authorization)) {
         next();
       } else {
-        res.send(401, 'unauthorized');
+        res.status(401).send('unauthorized');
         res.end();
       }
     };
   },
   start: function(req, res) {
     if (req.user && req.user._id) {
-      res.cookie('_helion', serialize(req.user), {httpOnly: true});
+      res.cookie(sessionId, serialize(req.user), {httpOnly: true});
       res.send(req.user);
       res.end();
     }
   },
   end: function(req, res) {
-    res.clearCookie('_helion');
+    res.clearCookie(sessionId);
     res.send({success: true});
     res.end();
   },
@@ -77,7 +78,7 @@ var session = module.exports = {
     var parts = (req.cookies[sessionId] || '').split(/-(.+)?/);
     req.user = {
       _id: parts[1],
-      authorization: +parts[0]
+      authorization: parts[0]
     };
     next();
   }

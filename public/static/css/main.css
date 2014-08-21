@@ -358,3 +358,7 @@ textarea {
 h4 {
   margin: 10px;
 }
+sup {
+  position: relative;
+  top: -2px;
+}
