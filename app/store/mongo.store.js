@@ -26,10 +26,12 @@ module.exports = {
     });
 
     db.once('open', function(err) {
-      if (err)
+      if (err) {
         deferred.reject(true);
-      else
+      } else {
+        console.log(' mongo connected\n  ' + config.dbName);
         deferred.resolve(null);
+      }
     });
 
     return deferred.promise;
