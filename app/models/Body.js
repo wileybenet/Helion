@@ -4,8 +4,11 @@ var mongoose = require('mongoose');
 var schema = mongoose.Schema({
   name: String,
   position: [Number],
-  radius: Number,
-  config: {},
+  config: {
+    fill: String,
+    stroke: String,
+    radius: Number
+  },
   copy: {
     // description, culture, military
   }

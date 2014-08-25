@@ -25,7 +25,9 @@
     </tr>
     <tr>
       <td class="data-label">Mass</td>
-      <td class="data-content" data-edit="data.model.radius" data-type="number" data-ng-bind-html="(((data.model.radius | int) | math:'pow':4)/ 512504300).toExponential(2) | exp:' M<sub>&#8857;</sub>'"></td>
+      <td class="data-content" data-edit="data.model.config.radius" data-type="number">
+        <span data-ng-bind-html="((((data.model.radius | int) | math:'pow':4)/ 512504300).toExponential(2) | exp:' M<sub>&#8857;</sub>') | htmlFormatted"></span>
+      </td>
     </tr>
   </table>
 </div>

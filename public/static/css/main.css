@@ -322,6 +322,7 @@ textarea {
 .data-table .data-content {
   font-weight: bold;
   padding-top: 4px;
+  vertical-align: middle;
 }
 
 

@@ -9,7 +9,8 @@ angular.module('Body', [])
     }, {
       initialize: function Body(model) {
         var this_ = this,
-          radius = model.radius,
+          ratio = $(window).width(),
+          radius = model.config.radius / 100 * ratio,
           options = model.config || {},
           resource = Resource(endpoint, { id: '@_id' }, {});
 
@@ -20,16 +21,16 @@ angular.module('Body', [])
         this.styles = {};
         this.object = new Path.Circle({
           radius: radius,
-          center: model.position,
+          center: new Point(model.position[0] / 100 * ratio, model.position[1] / 100 * ratio),
           shadowColor: '#000',
           shadowBlur: 6,
           shadowOffset: new Point(5, 5)
         });
         this.model.on('update', function() {
-          this_.object.scale(this.radius/radius);
-          this_.object.position = new Point(this.position[0], this.position[1]);
-          radius = this.radius;
-          this_.onMouseUp();
+          this_.object.scale((this.radius / 100 * ratio) / radius);
+          this_.object.position = new Point(this.position[0] / 100 * ratio, this.position[1] / 100 * ratio);
+          radius = this.radius / 100 * ratio;
+          this_.focus();
           paper.view.draw();
         });
         this.object.fillColor = {
@@ -89,6 +90,9 @@ angular.module('Body', [])
             model: this.model
           }
         });
+      },
+      focus: function focus() {
+        this.onMouseUp();
       },
       _trigger: function _trigger(evt, data) {
         this._listeners[evt].forEach(function(fn) {
