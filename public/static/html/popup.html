@@ -7,6 +7,12 @@
 <div class="body" data-ng-hide="tab !== 'Overview'" data-edit="data.model.copy.description">
   <span data-ng-bind-html="data.model.copy.description | htmlFormatted"></span>
 </div>
+<div class="body metro" data-ng-hide="tab !== 'Metro Areas'" data-edit="data.model.copy.metro">
+  <span data-ng-bind-html="data.model.copy.metro | htmlFormatted"></span>
+</div>
+<div class="body" data-ng-hide="tab !== 'Economy'" data-edit="data.model.copy.economy">
+  <span data-ng-bind-html="data.model.copy.economy | htmlFormatted"></span>
+</div>
 <div class="body" data-ng-hide="tab !== 'Culture'" data-edit="data.model.copy.culture">
   <span data-ng-bind-html="data.model.copy.culture | htmlFormatted"></span>
 </div>
@@ -26,14 +32,16 @@
     <tr>
       <td class="data-label">Mass</td>
       <td class="data-content" data-edit="data.model.config.radius" data-type="number">
-        <span data-ng-bind-html="((((data.model.radius | int) | math:'pow':4)/ 512504300).toExponential(2) | exp:' M<sub>&#8857;</sub>') | htmlFormatted"></span>
+        <span data-ng-bind-html="((((data.model.config.radius | int) | math:'pow':4)/ 512504300).toExponential(2) | exp:' M<sub>&#8857;</sub>') | htmlFormatted"></span>
       </td>
     </tr>
   </table>
 </div>
-<ul data-ng-init="tab = 'Overview'">
+<ul class="tabs" data-ng-init="tab = 'Overview'">
   <li data-ng-class="{active: tab === 'Overview'}" data-ng-click="tab = 'Overview'"><a class="fa fa-globe"></a></li>
+  <li data-ng-class="{active: tab === 'Metro Areas'}" data-ng-click="tab = 'Metro Areas'"><a class="fa fa-building-o"></a></li>
+  <li data-ng-class="{active: tab === 'Economy'}" data-ng-click="tab = 'Economy'"><a class="fa fa-usd"></a></li>
   <li data-ng-class="{active: tab === 'Culture'}" data-ng-click="tab = 'Culture'"><a class="fa fa-university"></a></li>
-  <li data-ng-class="{active: tab === 'Military'}" data-ng-click="tab = 'Military'"><a class="fa fa-space-shuttle"></a></li>
+  <li data-ng-class="{active: tab === 'Military'}" data-ng-click="tab = 'Military'"><a class="fa fa-crosshairs"></a></li>
   <li data-ng-class="{active: tab === 'Specs'}" data-ng-click="tab = 'Specs'"><a class="fa fa-gears"></a></li>
 </ul>

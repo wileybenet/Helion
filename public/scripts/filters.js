@@ -6,7 +6,11 @@ angular.module('filters', [])
   }])
   .filter('htmlFormatted', ['$sce', function($sce) {
     return function(str) {
-      str = (str || '').toString().replace(/\n/g, '<br />');
+      str = (str || '').toString()
+         // headers
+        .replace(/# ([^\n]+)\n/g, function(s, m) { return '<div class="heading">' + m + '</div>' })
+        // breaklines
+        .replace(/\n/g, '<br />');
       return $sce.trustAsHtml(str);
     };
   }])

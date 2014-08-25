@@ -49,6 +49,7 @@ textarea {
   margin: 5px;
   font-size: 12px;
   position: absolute;
+  right: 0;
   color: #CCC;
 }
 
@@ -118,6 +119,7 @@ textarea {
 }
 .modal>.heading {
   font-size: 14px;
+  margin-bottom: 20px;
 }
 .modal .body {
   margin-top: 8px;
@@ -240,34 +242,51 @@ textarea {
   line-height: 18px;
   font-size: 13px;
   min-height: 20px;
-  padding: 9px 12px 12px 12px;
+  padding: 9px 12px 20px 12px;
   max-height: 360px;
   overflow-y: scroll;
 }
-.popup ul {
-  list-style: none;
-  margin: 0;
-  padding: 0;
+.popup>.body .heading {
+  font-weight: 100;
+  font-size: 14px;
+  margin: 10px 0 2px 0;
 }
-.popup ul li {
+.popup>.body .heading:before {
+  font-family: FontAwesome;
+  margin-right: 5px;
+  font-size: 10px;
+}
+.popup>.body.metro .heading:before {
+  content: "\f11d";
+}
+.popup .tabs {
+  list-style: none;
+  margin: 0 0 -30px 0;
+  display: table;
+  padding: 0;
+  width: 100%;
+}
+.popup .tabs li {
   margin: 0;
-  display: block;
-  float: left;
-  padding: 5px 0 7px 0;
-  width: 25%;
+  display: table-cell;
+  padding: 9px 0 3px 0;
   color: #EEE;
   cursor: pointer;
   position: relative;
   text-align: center;
 }
-.popup ul li.active {
+.popup .tabs li a {
+  min-width: 18px;
+  display: block;
+}
+.popup .tabs li.active {
   color: #000 !important;
   background-color: rgba(255, 252, 234, 0.9);
   font-size: 16px;
   padding-top: 0;
   padding-bottom: 0;
 }
-.popup ul li.active:after {
+.popup .tabs li.active:after {
   content: '';
   width: 100%;
   box-sizing: border-box;
@@ -314,7 +333,7 @@ textarea {
 }
 .data-table td {
   padding: 3px 6px;
-  vertical-align: top;
+  vertical-align: middle;
 }
 .data-table .data-label {
   font-weight: 100;
@@ -322,7 +341,6 @@ textarea {
 .data-table .data-content {
   font-weight: bold;
   padding-top: 4px;
-  vertical-align: middle;
 }
 
 

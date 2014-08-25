@@ -27,9 +27,9 @@ angular.module('Body', [])
           shadowOffset: new Point(5, 5)
         });
         this.model.on('update', function() {
-          this_.object.scale((this.radius / 100 * ratio) / radius);
+          this_.object.scale((this.config.radius / 100 * ratio) / radius);
           this_.object.position = new Point(this.position[0] / 100 * ratio, this.position[1] / 100 * ratio);
-          radius = this.radius / 100 * ratio;
+          radius = this.config.radius / 100 * ratio;
           this_.focus();
           paper.view.draw();
         });
