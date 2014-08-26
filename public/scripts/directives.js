@@ -31,13 +31,13 @@ angular.module('directives', [])
             '<div class="close stop-hover" data-ng-click="reset()">',
               '<i class="fa fa-times"></i>',
             '</div>',
-            '<div class="heading">',
+            '<div class="header">',
               '<i class="fa fa-pencil"></i> <em>{{field | capitalizeFirstLetter}}</em>',
             '</div>',
             '<div class="border-two">',
               '<div class="body">',
-                '<form name="form" data-ng-init="height = getHeight(value)">',
-                  '<textarea name="field" class="input-field" data-ng-model="value" data-ng-style="{height: height+\'px\'}"></textarea>',
+                '<form name="form">',
+                  '<textarea name="field" class="input-field" data-ng-model="value" data-ng-style="{height: height+\'px\'}" data-ng-keydown="keyStroke($event, value)"></textarea>',
                 '</form>',
               '</div>',
               '<div class="footer" data-ng-hide="!form.field.$dirty">',
@@ -75,11 +75,9 @@ angular.module('directives', [])
           scope.field = attrs.edit.split('.').pop();
           property = $parse(attrs.edit);
           scope.value = originalValue = property(scope);
+          scope.height = Math.min(Math.floor((scope.value || '').length / 30) * 22 + 30, 400);
         }, true);
 
-        scope.getHeight = function(str) {
-          return Math.floor((str || '').length / 30) * 22 + 30;
-        };
         scope.stop = function(evt) {
           evt.stopPropagation();
         };
@@ -100,6 +98,12 @@ angular.module('directives', [])
             return false;
           if (evt.shiftKey || dblclick) {
             scope.editing = true;
+          }
+        };
+        scope.keyStroke = function(evt, value) {
+          if (evt.keyCode === 83 && (evt.ctrlKey || evt.metaKey)) {
+            evt.preventDefault();
+            scope.assign(value);
           }
         };
 
