@@ -27,6 +27,7 @@ module.exports = {
 
     db.once('open', function(err) {
       if (err) {
+        console.log(' Error\n  mongo failed connection');
         deferred.reject(true);
       } else {
         console.log(' mongo connected\n  ' + config.dbName);

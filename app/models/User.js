@@ -12,7 +12,7 @@ var schema = mongoose.Schema({
   },
   authorization: {
     type: String,
-    default: 'basic'
+    default: 'basic' // basic, admin
   }
 }, {
   collection: 'User'
