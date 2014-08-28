@@ -1,33 +1,4 @@
 angular.module('Utilities', ['directives', 'filters', 'factories'])
-  .factory('Bus', [function() {
-    var listeners = {
-      data: [],
-      frame: []
-    };
-    return {
-      onData: function(cbFn) {
-        listeners.data.push(cbFn);
-      },
-      push: function(data) {
-        listeners.data.forEach(function(fn) {
-          fn(data);
-        });
-      },
-      onFrame: function(cbFn) {
-        listeners.frame.push(cbFn);
-      },
-      '$init': function() {
-        // view.onFrame = function(evt) {
-        setInterval(function() {
-          listeners.frame.forEach(function(fn) {
-            fn();
-          });
-          paper.view.draw();
-        }, 100);
-        // };
-      }
-    };
-  }])
   .factory('Utils', [function() {
     return {
       hexToRgb: function(hex) {

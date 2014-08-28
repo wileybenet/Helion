@@ -1,11 +1,11 @@
 angular.module('Body', [])
   .service('Body', ['Base', 'Resource', 'Bus', 'Canvas', 'Utils', function(Base, Resource, Bus, Canvas, Utils) {
     var endpoint = '/api/v1/body/:id',
-      createReadApi = Resource(endpoint, {}, {});
+      crudApi = Resource(endpoint, {}, {});
 
     return Base.extend({
-      all: createReadApi.query,
-      create: createReadApi.save
+      all: crudApi.query,
+      create: crudApi.save
     }, {
       initialize: function Body(model) {
         var this_ = this,
@@ -55,34 +55,25 @@ angular.module('Body', [])
           this.object.shadowOffset = new Point(0, 0);
           this.styles.strokeColor = this.object.strokeColor;
         }
-        this._label = new PointText({
-          point: this.object.bounds.center,
-          justification: 'center',
-          fontSize: 8,
-          fillColor: 'white'
-        });
 
         this._listeners = {
           move: [],
           scale: []
         };
 
-        this.path = new Group([this.object, this._label]);
-
-        this.path.onMouseDrag = this.onMouseDrag.bind(this);
+        this.path = new Group([this.object]);
+        
         this.path.onMouseUp = this.onMouseUp.bind(this);
 
         Canvas.bodies.addChild(this.path);
       },
-      onMouseDrag: function onMouseDrag(evt) {
-        this.path.position.x = this.path.position.x + evt.delta.x;
-        this.path.position.y = this.path.position.y + evt.delta.y;
-        this._label.content = this.path.position.x+', '+this.path.position.y;
-        this._trigger('move', this.path);
-      },
       onMouseUp: function onMouseUp(evt) {
         var position = this.object.bounds.topRight.add(10, -20);
         Bus.push({
+          center: {
+            x: this.object.position.x,
+            y: this.object.position.y
+          },
           popupInfo: {
             x: position.x,
             y: position.y,

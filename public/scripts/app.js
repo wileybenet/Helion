@@ -24,6 +24,27 @@ angular.module('Helion', ['ngResource', 'core', 'Canvas', 'System', 'Utilities']
       },0);
     });
 
+    // $scope.$watch('center', function(center) {
+    //   if (!center)
+    //     return false;
+    //   var start = +new Date();
+
+    //   var unBind = Bus.onFrame(function() {
+    //     view.setCenter(center);
+    //     view.zoom += (+new Date() - start) / 30000;
+    //     if (view.zoom >= 2) {
+    //       unBind();
+    //     }
+    //   });
+    // }, true);
+
+    // $scope.$watch('popupInfo.model', function(model) {
+    //   if (!model) {
+    //     view.setCenter([$(window).width() / 2, $(window).height() / 2]);
+    //     view.zoom = 1;
+    //   }
+    // });
+
     $q.all({
       bodies: Body.all().$promise
     }).then(function(res) {
