@@ -14,6 +14,7 @@ angular.module('Helion', ['ngResource', 'core', 'Canvas', 'System', 'Utilities']
   function($scope, $q, Body, Mover, Canvas, System, Bus) {
     Canvas.$init();
     Bus.$init();
+    
     Bus.onData(function(data) {
       setTimeout(function() {
         $scope.$apply(function() {
@@ -24,26 +25,28 @@ angular.module('Helion', ['ngResource', 'core', 'Canvas', 'System', 'Utilities']
       },0);
     });
 
-    // $scope.$watch('center', function(center) {
-    //   if (!center)
-    //     return false;
-    //   var start = +new Date();
+    $(document).on('keyup', function(evt) {
+      $scope.$apply(function() {
+        if (evt.keyCode === 27) {
+          view.setCenter([$(window).width() / 2, $(window).height() / 2]);
+          view.zoom = 1;
+        }
+      }); 
+    });
 
-    //   var unBind = Bus.onFrame(function() {
-    //     view.setCenter(center);
-    //     view.zoom += (+new Date() - start) / 30000;
-    //     if (view.zoom >= 2) {
-    //       unBind();
-    //     }
-    //   });
-    // }, true);
-
-    // $scope.$watch('popupInfo.model', function(model) {
-    //   if (!model) {
-    //     view.setCenter([$(window).width() / 2, $(window).height() / 2]);
-    //     view.zoom = 1;
-    //   }
-    // });
+    $scope.$watch('center', function(center) {
+      if (!center)
+        return false;
+      var startCenter = view.center,
+        startZ = view.zoom,
+        dx = center.x - view.center.x,
+        dy = center.y - view.center.y,
+        dz = 2 - startZ;
+      Bus.animate(function(percentComplete) {
+        view.setCenter([startCenter.x + dx * percentComplete, startCenter.y + dy * percentComplete]);
+        view.zoom = startZ + dz * percentComplete;
+      }, 1300, 'easeOutCubic');
+    }, true);
 
     $q.all({
       bodies: Body.all().$promise

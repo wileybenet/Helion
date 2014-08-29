@@ -62,22 +62,18 @@ angular.module('Body', [])
         };
 
         this.path = new Group([this.object]);
-        
+
         this.path.onMouseUp = this.onMouseUp.bind(this);
 
         Canvas.bodies.addChild(this.path);
       },
       onMouseUp: function onMouseUp(evt) {
-        var position = this.object.bounds.topRight.add(10, -20);
         Bus.push({
           center: {
             x: this.object.position.x,
             y: this.object.position.y
           },
           popupInfo: {
-            x: position.x,
-            y: position.y,
-            dx: this.object.bounds.width + 20,
             model: this.model
           }
         });

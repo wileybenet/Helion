@@ -213,8 +213,10 @@ textarea {
 
 .popup {
   width: 260px;
-  position: absolute;
+  position: fixed;
   z-index: 10;
+  top: 120px;
+  right: 0;
   color: #333;
   font-size: 12px;
   -webkit-transition: all 0.2s ease-out;

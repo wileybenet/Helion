@@ -4,21 +4,6 @@ angular.module('directives', [])
       templateUrl: '/static/html/popup.html',
       scope: {
         data: '=canvasPopup'
-      },
-      link: function(scope, element, attrs) {
-        scope.$watch('data', function() {
-          $timeout(function() {
-            var top = Math.min($(window).height() - element.height() - 40, scope.data.y),
-              left = scope.data.x;
-            if (scope.flipped = $(window).width() - 260 < left) {
-              left = scope.data.x - scope.data.dx - 260;
-            }
-            element.css({
-              top: top + 'px',
-              left: left + 'px'
-            });
-          });
-        }, true);
       }
     };
   }])

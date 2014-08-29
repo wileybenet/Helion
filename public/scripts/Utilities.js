@@ -1,4 +1,4 @@
-angular.module('Utilities', ['directives', 'filters', 'factories'])
+angular.module('Utilities', ['directives', 'filters', 'factories', 'easing'])
   .factory('Utils', [function() {
     return {
       hexToRgb: function(hex) {

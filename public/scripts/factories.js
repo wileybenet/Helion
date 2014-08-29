@@ -1,34 +1,57 @@
 angular.module('factories', [])
-  .factory('Bus', [function() {
+  .factory('Bus', ['easing', function(easing) {
     var listeners = {
-      data: [],
-      frame: []
-    };
+        data: [],
+        frame: []
+      },
+      id = 0;
     return {
-      onData: function(cbFn) {
+      onData: function onData(cbFn) {
         listeners.data.push(cbFn);
       },
-      push: function(data) {
+      push: function push(data) {
         listeners.data.forEach(function(fn) {
           fn(data);
         });
       },
-      onFrame: function(cbFn) {
-        var idx = listeners.frame.push(cbFn) - 1;
-        console.log(listeners.frame);
+      onFrame: function onFrame(cbFn) {
+        cbFn._id = id++;
+        listeners.frame.push(cbFn);
         return function() {
-          var x = 10;
-          listeners.frame.splice(idx, 1);
+          for (var i = listeners.frame.length - 1; i >= 0; i--) {
+            if (cbFn._id === listeners.frame[i]._id) {
+              listeners.frame.splice(i, 1);
+            }
+          }
         };
       },
-      '$init': function() {
+      animate: function animate(stepFn, duration, easingFnName) {
+        var startTime = +new Date(),
+          easingFn = easingFnName ? easing[easingFnName] : function(x) { return x; },
+          lastPercent;
+
+        var unbind = this.onFrame(function() {
+          var currentTime = (+new Date() - startTime),
+            percentComplete = currentTime / duration;
+
+          percentComplete = easingFn(percentComplete, currentTime, 0, 1, duration);
+
+          if (percentComplete >= 1 || percentComplete < lastPercent) {
+            unbind();
+            stepFn(1);
+          } else {
+            stepFn(lastPercent = percentComplete);
+          }
+        });
+      },
+      '$init': function $init() {
         // view.onFrame = function(evt) {
         setInterval(function() {
           listeners.frame.forEach(function(fn) {
             fn();
           });
           paper.view.draw();
-        }, 100);
+        }, 50);
         // };
       }
     };
