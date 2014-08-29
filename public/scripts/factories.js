@@ -28,19 +28,18 @@ angular.module('factories', [])
       animate: function animate(stepFn, duration, easingFnName) {
         var startTime = +new Date(),
           easingFn = easingFnName ? easing[easingFnName] : function(x) { return x; },
-          lastPercent;
+          lastPosition;
 
         var unbind = this.onFrame(function() {
           var currentTime = (+new Date() - startTime),
-            percentComplete = currentTime / duration;
+            percentComplete = currentTime / duration,
+            postition = easingFn(percentComplete, currentTime, 0, 1, duration);
 
-          percentComplete = easingFn(percentComplete, currentTime, 0, 1, duration);
-
-          if (percentComplete >= 1 || percentComplete < lastPercent) {
+          if (percentComplete >= 1) {
             unbind();
             stepFn(1);
           } else {
-            stepFn(lastPercent = percentComplete);
+            stepFn(lastPosition = postition);
           }
         });
       },

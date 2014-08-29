@@ -50,7 +50,7 @@ angular.module('Helion', ['ngResource', 'core', 'Canvas', 'System', 'Utilities']
       Bus.animate(function(percentComplete) {
         view.setCenter([startCenter.x + dx * percentComplete, startCenter.y + dy * percentComplete]);
         view.zoom = startZ + dz * percentComplete;
-      }, 1300, 'easeOutCubic');
+      }, 1300, 'easeOutElastic');
     }, true);
 
     $q.all({
