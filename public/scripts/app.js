@@ -10,11 +10,11 @@ angular.module('Helion', ['ngResource', 'core', 'Canvas', 'System', 'Utilities']
       }
     };
   }])
-  .controller('CanvasCtrl', ['$scope', '$q', 'Body', 'Mover', 'Canvas', 'System', 'Bus',
-  function($scope, $q, Body, Mover, Canvas, System, Bus) {
+  .controller('CanvasCtrl', ['$scope', '$rootScope', '$q', 'Body', 'Mover', 'Canvas', 'System', 'Bus',
+  function($scope, $rootScope, $q, Body, Mover, Canvas, System, Bus) {
     Canvas.$init();
     Bus.$init();
-    
+
     Bus.onData(function(data) {
       setTimeout(function() {
         $scope.$apply(function() {
@@ -25,13 +25,18 @@ angular.module('Helion', ['ngResource', 'core', 'Canvas', 'System', 'Utilities']
       },0);
     });
 
+    $rootScope.resetView = function() {
+      view.setCenter([$(window).width() / 2, $(window).height() / 2]);
+      view.zoom = 1;
+      $scope.center = null;
+    };
+
     $(document).on('keyup', function(evt) {
-      $scope.$apply(function() {
-        if (evt.keyCode === 27) {
-          view.setCenter([$(window).width() / 2, $(window).height() / 2]);
-          view.zoom = 1;
-        }
-      }); 
+      if (evt.keyCode === 27) {
+        $scope.$apply(function() {   
+          $rootScope.resetView();
+        }); 
+      }
     });
 
     $scope.$watch('center', function(center) {
