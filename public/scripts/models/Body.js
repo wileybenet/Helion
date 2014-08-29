@@ -71,7 +71,8 @@ angular.module('Body', [])
         Bus.push({
           center: {
             x: this.object.position.x,
-            y: this.object.position.y
+            y: this.object.position.y,
+            z: this.model.config.radius
           },
           popupInfo: {
             model: this.model

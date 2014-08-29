@@ -54,11 +54,11 @@ angular.module('Helion', ['ngResource', 'core', 'Canvas', 'System', 'Utilities']
         startZ = view.zoom,
         dx = center.x - view.center.x,
         dy = center.y - view.center.y,
-        dz = 2 - startZ;
-      Bus.animate('canvas', function(percentComplete) {
-        view.setCenter([startCenter.x + dx * percentComplete, startCenter.y + dy * percentComplete]);
-        view.zoom = startZ + dz * percentComplete;
-      }, 1300, 'easeOutExpo');
+        dz = (10 / center.z) - startZ;
+      Bus.animate('canvas', function(position) {
+        view.setCenter([startCenter.x + dx * position, startCenter.y + dy * position]);
+        view.zoom = startZ + dz * position;
+      }, 1000, 'easeOutExpo');
     }, true);
 
     $q.all({
