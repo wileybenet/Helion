@@ -26,8 +26,16 @@ angular.module('Helion', ['ngResource', 'core', 'Canvas', 'System', 'Utilities']
     });
 
     $rootScope.resetView = function() {
-      view.setCenter([$(window).width() / 2, $(window).height() / 2]);
-      view.zoom = 1;
+      var startCenter = view.center,
+        startZ = view.zoom,
+        dx = $(window).width() / 2 - view.center.x,
+        dy = $(window).height() / 2 - view.center.y,
+        dz = 1 - startZ;
+      Bus.animate('canvas', function(percentComplete) {
+        view.setCenter([startCenter.x + dx * percentComplete, startCenter.y + dy * percentComplete]);
+        view.zoom = startZ + dz * percentComplete;
+      }, 500, 'easeOutExpo');
+
       $scope.center = null;
     };
 
