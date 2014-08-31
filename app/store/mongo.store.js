@@ -8,6 +8,7 @@ var path = require('path'),
 var retries = 0;
 
 function connect(config) {
+  console.log(config);
   var deferred = Q.defer(),
     config = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../..', config.path))),
     db = mongoose.connection,
@@ -25,7 +26,9 @@ function connect(config) {
   db.on('error', function(err) {
     console.log('mongo connection error:', err);
     console.log('\n reconnection #' + ++retries);
-    setTimeout(connect, 500);
+    setTimeout(function() {
+      connect(config);
+    }, 500);
   });
 
   db.once('open', function(err) {

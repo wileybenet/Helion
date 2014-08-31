@@ -55,23 +55,21 @@ var session = module.exports = {
     }
   },
   end: function(req, res) {
-    res.clearCookie(sessionId);
-    res.send({success: true});
-    res.end();
+    res.clearCookie(sessionId)
+      .send({success: true})
+      .end();
   },
   current: function(req, res) {
     if (req.user && req.user._id) {
       User.findById(req.user._id).exec(function(err, user) {
         if (err) {
-          res.end(err);
+          res.send(err).end();
         } else {
-          res.send(user);
-          res.end();
+          res.send(user).end();
         }
       });
     } else {
-      res.send({error: 'no session'});
-      res.end();
+      res.send({error: 'no session'}).end();
     }
   },
   deserialize: function(req, res, next) {

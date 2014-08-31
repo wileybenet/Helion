@@ -22,13 +22,11 @@ angular.module('Mover', [])
       all: function() {}
     }, {
       initialize: function Mover(start, options) {
-        this.position = start.object.bounds.center
+        this.currentPosition = start.object.bounds.center
         this.waypoints = [start];
         this.current = {};
 
         this.options = options || {};
-
-        Bus.onFrame(this.onFrame.bind(this));
 
         return this;
       },
@@ -41,18 +39,20 @@ angular.module('Mover', [])
           this.to(1, action, 1);
       },
       to: function to(state, action, direction) {
+        var this_ = this;
         var destination = this.waypoints[state];
-        if (destination.object.bounds.center.equals(this.position))
+        if (destination.object.bounds.center.equals(this.currentPosition))
           return false;
+
         this.path = Path.Circle({
-          center: this.position,
+          center: this.currentPosition,
           radius: 1,
           fillColor: this.options.color
             || Utils.luminosity(this.waypoints[0].color, 0.8)
             || '#fff'
         });
-        this.moving = true;
-        this.current.trajectory = getEntropyArc(
+
+        this.trajectory = getEntropyArc(
           this.path.bounds.center,
           destination.object.bounds.center,
           Array.isArray(this.options.fixed)
@@ -62,21 +62,17 @@ angular.module('Mover', [])
             ]
             : this.options.fixed
         );
-        this.current.trajectory.strokeWidth = 0.5;
-        this.current.curve = 0;
-        this.current.position = 0;
-        this.current.count = 0;
-        this.current.speed = 1 / this.current.trajectory.length * SPEED * this.current.trajectory.curves.length;
-        this.current.total = this.current.trajectory.length / SPEED;
-        this.current.cbFn = function() {
+        this.trajectory.strokeWidth = 0.5;
+
+        this.cbFn = function() {
           var dir = direction,
-            st = state+direction;
-          this.position = destination.object.bounds.center;
+            st = state + direction;
+          this.currentPosition = destination.object.bounds.center;
           if (action === 'bounce') {
             if (st === this.waypoints.length || st < 0) {
               dir *= -1;
             }
-            this.to(state+dir, 'bounce', dir);
+            this.to(state + dir, 'bounce', dir);
           } else if (action === 'loop') {
             if (st === this.waypoints.length) {
               st = 0;
@@ -85,33 +81,28 @@ angular.module('Mover', [])
           }
         };
 
-        Canvas.tracks.addChild(this.current.trajectory);
+        var duration = this.trajectory.length * 100;
+
+        Canvas.tracks.addChild(this.trajectory);
         Canvas.movers.addChild(this.path);
+
+        Bus.animate(function(position, percentComplete, time) {
+          var chunkSize = 1 / this_.trajectory.curves.length,
+            currentSegment = Math.ceil(percentComplete / chunkSize) - 1,
+            relativePosition = (position - currentSegment * chunkSize) / chunkSize;
+          this_.path.position = this_.trajectory.curves[currentSegment].getPointAt(Math.min(relativePosition, 0.999), true);
+          this_.trajectory.strokeColor = 'rgba('+Utils.hexToRgb('fff')+','+0.3+')';
+        }, duration, this.transfer.bind(this_));
       },
-      move: function move() {
+      transfer: function transfer() {
         var this_ = this;
-        this.current.position += this.current.speed;
-        this.path.position = this.current.trajectory.curves[this.current.curve].getPointAt(Math.min(this.current.position, 0.999), true);
-        this.current.count++;
-        this.current.trajectory.strokeColor = 'rgba('+Utils.hexToRgb('fff')+','+Math.min(this.current.count / 200, ((this.current.total-this.current.count) / 200), 0.1)+')';
-        if (this.current.position >= 1) {
-          this.current.curve++;
-          if (this.current.curve >= this.current.trajectory.curves.length) {
-            this.current.trajectory.remove();
-            this.path.remove();
-            this.moving = false;
-            setTimeout(function() {
-              this_.current.cbFn.call(this_);
-            }, this.options.layover || 500);
-          } else {
-            this.current.position = 0;
-          }
-        }
-      },
-      onFrame: function onFrame(evt) {
-        if (this.moving) {
-          this.move();
-        }
+        this.trajectory.remove();
+        this.path.remove();
+        
+        setTimeout(function() {
+          this_.cbFn();
+        }, this.options.layover || 50);
       }
     });
   }]);
+

@@ -25,6 +25,7 @@ angular.module('factories', [])
         }
 
         listeners.frame.push(cbFn);
+
         return function() {
           for (var i = listeners.frame.length - 1; i >= 0; i--) {
             if (cbFn._id === listeners.frame[i]._id) {
@@ -33,33 +34,38 @@ angular.module('factories', [])
           }
         };
       },
-      animate: function animate(name, stepFn, duration, easingFnName) {
-        if (typeof name === 'function') {
-          easingFnName = duration;
-          duration = stepFn;
-          stepFn = name;
-        }
+      animate: function animate(_name, _stepFn, _duration, _easingFnName, _cbFn) {
+        var args = [].slice.call(arguments, 0);
+        if (typeof args[0] === 'function')
+          args.unshift(undefined);
+        if (typeof args[3] === 'function')
+          args.splice(3, 0, undefined);
+
+        var name = args[0],
+          stepFn = args[1],
+          duration = args[2],
+          easingFnName = args[3],
+          cbFn = args[4];
+        
         var startTime = +new Date(),
           easingFn = easingFnName ? easing[easingFnName] : function(x) { return x; },
-          lastPosition,
           unbind;
 
-        var frameFn = function() {
+        function frameFn() {
           var currentTime = (+new Date() - startTime),
             percentComplete = currentTime / duration,
             postition = easingFn(percentComplete, currentTime, 0, 1, duration, .8);
 
           if (percentComplete >= 1) {
+            stepFn(1, 1, currentTime);
+            cbFn && cbFn();
             unbind();
-            stepFn(1);
           } else {
-            stepFn(lastPosition = postition);
+            stepFn(postition, percentComplete, currentTime);
           }
         };
 
-        if (typeof name === 'string') {
-          frameFn._name = name;
-        }
+        frameFn._name = name;
         
         unbind = this.onFrame(frameFn);
       },
