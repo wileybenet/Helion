@@ -9,12 +9,21 @@ angular.module('System', ['Body', 'Mover'])
         });
       },
       bodies: [],
-      randomBody: function() {
+      get: function get(_id) {
+        var match = null;
+        this.bodies.forEach(function(body) {
+          if (body.model._id === _id) {
+            match = body;
+          }
+        });
+        return match;
+      },
+      randomBody: function randomBody() {
         return this.bodies[Math.floor(Math.random() * this.bodies.length)];
       }
     }
   }])
-  .service('Base', [function() {
+  .factory('Base', [function() {
     function extend(prop1, prop2) {
       var property,
         parent = this,

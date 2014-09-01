@@ -80,35 +80,46 @@ angular.module('Helion', ['ngResource', 'core', 'Canvas', 'System', 'Utilities']
     }, true);
 
     $q.all({
-      bodies: Body.all().$promise
+      bodies: Body.all().$promise,
+      movers: Mover.all().$promise
     }).then(function(res) {
       var bodies = res.bodies.map(function(body) {
         return new Body(body);
       });
       System.create(bodies);
 
-      new Mover(System.Mir, {fixed: 0.4})
-        .setWaypoints([System.Eris])
-        .start('bounce');
-      new Mover(System.Eris, {fixed: [0.4, null], speed: 2})
-        .setWaypoints([System.Mir, System.Aqx])
-        .start('bounce');
-      new Mover(System.Mir, {fixed: 0.1})
-        .setWaypoints([System.Kassel])
-        .start('bounce');
-      new Mover(System.Mir, {fixed: -0.3})
-        .setWaypoints([System.Alkon])
-        .start('bounce');
-      new Mover(System.Mir, {})
-        .setWaypoints([System.Krasic])
-        .start('bounce');
-      new Mover(System.Eris, {fixed: [-0.4, 0.2, 0.3], layover: 1})
-        .setWaypoints([System.Maria, System.Jorah])
-        .start('loop');
+      res.movers.forEach(function(mover) {
+        new Mover(mover);
+      });
 
-      new Mover(System.Krasic, {fixed: 0.15, color: '#0F0'})
-        .setWaypoints([System.Earth])
-        .start('bounce');
+      // new Mover({
+      //   home: System.Eris, 
+      //   config: {  
+      //     fixed: [0.4, null], 
+      //     speed: 2, 
+      //     finish: 'bounce'
+      //   },
+      //   waypoints: [System.Mir, System.Aqx]
+      // });
+      // new Mover(System.Mir, {fixed: 0.4})
+      //   .setWaypoints([System.Eris])
+      //   .start('bounce');
+      // new Mover(System.Mir, {fixed: 0.1})
+      //   .setWaypoints([System.Kassel])
+      //   .start('bounce');
+      // new Mover(System.Mir, {fixed: -0.3})
+      //   .setWaypoints([System.Alkon])
+      //   .start('bounce');
+      // new Mover(System.Mir, {})
+      //   .setWaypoints([System.Krasic])
+      //   .start('bounce');
+      // new Mover(System.Eris, {fixed: [-0.4, 0.2, 0.3], layover: 1})
+      //   .setWaypoints([System.Maria, System.Jorah])
+      //   .start('loop');
+
+      // new Mover(System.Krasic, {fixed: 0.15, color: '#0F0'})
+      //   .setWaypoints([System.Earth])
+      //   .start('bounce');
 
       paper.view.draw();
       $scope.canvasLoaded = true;

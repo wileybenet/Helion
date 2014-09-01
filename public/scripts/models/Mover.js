@@ -1,6 +1,8 @@
 angular.module('Mover', [])
-  .service('Mover', ['Base', 'Canvas', 'Bus', 'Utils', function(Base, Canvas, Bus, Utils) {
-    var SPEED = .4;
+  .service('Mover', ['Base', 'System', 'Canvas', 'Bus', 'Resource', 'Utils', function(Base, System, Canvas, Bus, Resource, Utils) {
+    var SPEED = .4,
+      endpoint = '/api/v1/mover/:id',
+      crudApi = Resource(endpoint, {}, {});
 
     function getEntropy() {
       var side = Math.random() - 0.5;
@@ -19,24 +21,21 @@ angular.module('Mover', [])
     };
 
     return Base.extend({
-      all: function() {}
+      all: crudApi.query
     }, {
-      initialize: function Mover(start, options) {
-        this.currentPosition = start.object.bounds.center
-        this.waypoints = [start];
+      initialize: function Mover(options) {
+        var homeBody = System.get(options.home);
+        this.currentPosition = homeBody.object.bounds.center
+        this.waypoints = [homeBody].concat(options.waypoints.map(function(_id) {
+          return System.get(_id);
+        }));
         this.current = {};
 
-        this.options = options || {};
+        this.options = options.config || {};
+
+        this.to(1, options.config.finish || 'loop', 1);
 
         return this;
-      },
-      setWaypoints: function setWaypoints(waypoints) {
-        this.waypoints = this.waypoints.concat(waypoints);
-        return this;
-      },
-      start: function start(action) {
-        if (this.waypoints.length > 1)
-          this.to(1, action, 1);
       },
       to: function to(state, action, direction) {
         var this_ = this;
@@ -92,6 +91,7 @@ angular.module('Mover', [])
             relativePosition = (position - currentSegment * arcSize) / arcSize;
           this_.path.position = this_.trajectory.curves[currentSegment].getPointAt(Math.min(relativePosition, 0.999), true);
         }, duration, this.transfer.bind(this_));
+
         Bus.animate(function(position) {
           this_.trajectory.strokeColor = 'rgba('+Utils.hexToRgb('fff')+','+(position * 0.3)+')';
         }, 2000);

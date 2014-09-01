@@ -12,7 +12,8 @@ store.connect({
       sessionId: '_helion',
       resources: [
         'User',
-        'Body'
+        'Body',
+        'Mover'
       ]
     });
   }, function() {
