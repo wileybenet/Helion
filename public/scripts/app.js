@@ -26,16 +26,23 @@ angular.module('Helion', ['ngResource', 'core', 'Canvas', 'System', 'Utilities']
     });
 
     $rootScope.resetView = function() {
-      var startCenter = view.center,
-        startZ = view.zoom,
-        dx = $(window).width() / 2 - view.center.x,
-        dy = $(window).height() / 2 - view.center.y,
-        dz = 1 - startZ;
+      var x_0 = view.center.x,
+        x_1 = $(window).width() / 2,
+        dx = x_1 - x_0,
+        y_0 = view.center.y,
+        y_1 = $(window).height() / 2,
+        dy = y_1 - y_0,
+        z_0 = view.zoom,
+        z_1 = 1,
+        dz = z_1 - z_0;
 
       Bus.animate('canvas', function(position) {
-        view.setCenter([startCenter.x + dx * position, startCenter.y + dy * position]);
-        view.setZoom(startZ + dz * position);
-      }, 300, 'easeOutCubic');
+        view.setCenter([
+          x_0 + (dx * position) / (dz * position + z_0),
+          y_0 + (dy * position) / (dz * position + z_0)
+        ]);
+        view.setZoom(z_0 + dz * position);
+      }, 500, 'easeOutQuint');
 
       $scope.center = null;
     };
@@ -59,7 +66,7 @@ angular.module('Helion', ['ngResource', 'core', 'Canvas', 'System', 'Utilities']
         y_1 = center.y,
         dy = y_1 - y_0,
         z_0 = view.zoom,
-        z_1 = (20 / center.z) - z_0,
+        z_1 = center.z,
         dz = z_1 - z_0;
 
       Bus.animate('canvas', function(position) {
@@ -67,8 +74,8 @@ angular.module('Helion', ['ngResource', 'core', 'Canvas', 'System', 'Utilities']
           x_0 + (dx - (dx * (1 - position)) / (dz * position + z_0)),
           y_0 + (dy - (dy * (1 - position)) / (dz * position + z_0))
         ]);
-        view.setZoom(z_0 + z_1 * position);
-      }, 1000);
+        view.setZoom(z_0 + dz * position);
+      }, 1000, 'easeOutQuint');
 
     }, true);
 

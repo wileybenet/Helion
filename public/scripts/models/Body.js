@@ -72,7 +72,7 @@ angular.module('Body', [])
           center: {
             x: this.object.position.x,
             y: this.object.position.y,
-            z: this.model.config.radius
+            z: 20 / this.model.config.radius
           },
           popupInfo: {
             model: this.model
