@@ -76,7 +76,7 @@ angular.module('factories', [])
             fn();
           });
           paper.view.draw();
-        }, 50);
+        }, 33.33);
         // };
       }
     };

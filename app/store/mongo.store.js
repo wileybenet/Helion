@@ -8,27 +8,26 @@ var path = require('path'),
 var retries = 0;
 
 function connect(config) {
-  console.log(config);
   var deferred = Q.defer(),
-    config = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../..', config.path))),
+    configParams = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../..', config.path))),
     db = mongoose.connection,
     connectionStr = [
       'mongodb://',
-      config.username,
+      configParams.username,
       ':',
-      config.password,
+      configParams.password,
       '@kahana.mongohq.com:10005/',
-      config.dbName
+      configParams.dbName
     ].join('');
 
   mongoose.connect(connectionStr);
   
   db.on('error', function(err) {
     console.log('mongo connection error:', err);
-    console.log('\n reconnection #' + ++retries);
-    setTimeout(function() {
-      connect(config);
-    }, 500);
+    // console.log('\n reconnection #' + ++retries);
+    // setTimeout(function() {
+    //   connect(config);
+    // }, 500);
   });
 
   db.once('open', function(err) {
@@ -36,7 +35,7 @@ function connect(config) {
       console.log(' Error\n  mongo failed connection');
       deferred.reject(true);
     } else {
-      console.log(' mongo connected\n  ' + config.dbName);
+      console.log(' mongo connected\n  ' + configParams.dbName);
       deferred.resolve(null);
     }
   });

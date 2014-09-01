@@ -81,22 +81,29 @@ angular.module('Mover', [])
           }
         };
 
-        var duration = this.trajectory.length * 100;
+        var duration = this.trajectory.length * (this.options.speed ? (57 / this.options.speed) : 57);
 
         Canvas.tracks.addChild(this.trajectory);
         Canvas.movers.addChild(this.path);
 
         Bus.animate(function(position, percentComplete, time) {
-          var chunkSize = 1 / this_.trajectory.curves.length,
-            currentSegment = Math.ceil(percentComplete / chunkSize) - 1,
-            relativePosition = (position - currentSegment * chunkSize) / chunkSize;
+          var arcSize = 1 / this_.trajectory.curves.length,
+            currentSegment = Math.ceil(percentComplete / arcSize) - (percentComplete === 0 ? 0 : 1),
+            relativePosition = (position - currentSegment * arcSize) / arcSize;
           this_.path.position = this_.trajectory.curves[currentSegment].getPointAt(Math.min(relativePosition, 0.999), true);
-          this_.trajectory.strokeColor = 'rgba('+Utils.hexToRgb('fff')+','+0.3+')';
         }, duration, this.transfer.bind(this_));
+        Bus.animate(function(position) {
+          this_.trajectory.strokeColor = 'rgba('+Utils.hexToRgb('fff')+','+(position * 0.3)+')';
+        }, 2000);
       },
       transfer: function transfer() {
-        var this_ = this;
-        this.trajectory.remove();
+        var this_ = this,
+          trajectory = this.trajectory;
+        Bus.animate(function(position) {
+          trajectory.strokeColor = 'rgba('+Utils.hexToRgb('fff')+','+((1 - position) * 0.3)+')';
+        }, 1000, function() {
+          trajectory.remove();
+        });
         this.path.remove();
         
         setTimeout(function() {
