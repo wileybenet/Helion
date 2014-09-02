@@ -1,5 +1,5 @@
 angular.module('Body', [])
-  .service('Body', ['Base', 'Resource', 'Bus', 'Canvas', 'Utils', function(Base, Resource, Bus, Canvas, Utils) {
+  .service('Body', ['Base', 'Resource', 'Emitter', 'Loader', 'Canvas', 'Utils', function(Base, Resource, Emitter, Loader, Canvas, Utils) {
     var endpoint = '/api/v1/body/:id',
       crudApi = Resource(endpoint, {}, {});
 
@@ -38,7 +38,8 @@ angular.module('Body', [])
             stops: [
               [Utils.luminosity(options.fill, 0.2), 0.05],
               [Utils.luminosity(options.fill, -0.1), 0.3],
-              [Utils.luminosity(options.fill, -0.5), 0.7], ['#000', 1]
+              [Utils.luminosity(options.fill, -0.5), 0.7],
+              ['#000', 1]
             ],
             radial: true
           },
@@ -66,17 +67,25 @@ angular.module('Body', [])
         this.path.onMouseUp = this.onMouseUp.bind(this);
 
         Canvas.bodies.addChild(this.path);
+
+        Emitter.on('camera:reset', function(evt) {
+          if (this_.surface) {
+            this_.surface.remove();
+            delete this_.surface;
+          }
+        });
       },
       onMouseUp: function onMouseUp(evt) {
-        Bus.push({
-          center: {
-            x: this.object.position.x,
-            y: this.object.position.y,
-            z: 20 / this.model.config.radius
-          },
-          popupInfo: {
-            model: this.model
-          }
+        var this_ = this;
+
+        Canvas.focusCamera(this.object.position, 20 / this.model.config.radius);
+
+        Loader.get('eris', function(group) {
+          group.scale(this_.path.bounds.getWidth() / group.bounds.getWidth());
+          group.position.x = this_.path.position.x;
+          group.position.y = this_.path.position.y;
+          this_.path.addChild(group);
+          this_.surface = group;
         });
       },
       focus: function focus() {

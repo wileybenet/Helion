@@ -1,38 +1,52 @@
 angular.module('factories', [])
-  .factory('Bus', ['easing', function(easing) {
-    var listeners = {
-        data: [],
-        frame: []
-      },
+  .factory('Emitter', ['easing', function(easing) {
+    var eventListeners = {
+      frame: []
+    },
       id = 0;
+
+    function unBinder(name, _id) {
+      return function() {
+        for (var i = eventListeners[name].length - 1; i >= 0; i--) {
+          if (_id === eventListeners[name][i]._id) {
+            eventListeners[name].splice(i, 1);
+          }
+        }
+      };
+    }
+
+    setInterval(function() {
+      eventListeners.frame.forEach(function(fn) {
+        fn();
+      });
+      paper.view.draw();
+    }, 33.33);
+
     return {
-      onData: function onData(cbFn) {
-        listeners.data.push(cbFn);
+      on: function on(evtName, cbFn) {
+        cbFn._id = id++;
+        eventListeners[evtName] = eventListeners[evtName] || [];
+        eventListeners[evtName].push(cbFn);
+        return unBinder(evtName, cbFn._id);
       },
-      push: function push(data) {
-        listeners.data.forEach(function(fn) {
+      emit: function emit(evtName, data) {
+        eventListeners[evtName].forEach(function(fn) {
           fn(data);
         });
       },
       onFrame: function onFrame(cbFn) {
         cbFn._id = id++;
         if (cbFn._name) {
-          for (var i = listeners.frame.length - 1; i >= 0; i--) {
-            if (cbFn._name === listeners.frame[i]._name) {
-              listeners.frame.splice(i, 1);
+          for (var i = eventListeners.frame.length - 1; i >= 0; i--) {
+            if (cbFn._name === eventListeners.frame[i]._name) {
+              eventListeners.frame.splice(i, 1);
             }
           }
         }
 
-        listeners.frame.push(cbFn);
+        eventListeners.frame.push(cbFn);
 
-        return function() {
-          for (var i = listeners.frame.length - 1; i >= 0; i--) {
-            if (cbFn._id === listeners.frame[i]._id) {
-              listeners.frame.splice(i, 1);
-            }
-          }
-        };
+        return unBinder('frame', cbFn._id);
       },
       animate: function animate(_name, _stepFn, _duration, _easingFnName, _cbFn) {
         var args = [].slice.call(arguments, 0);
@@ -68,16 +82,21 @@ angular.module('factories', [])
         frameFn._name = name;
         
         unbind = this.onFrame(frameFn);
-      },
-      '$init': function $init() {
-        // view.onFrame = function(evt) {
-        setInterval(function() {
-          listeners.frame.forEach(function(fn) {
-            fn();
+      }
+    };
+  }])
+  .factory('Loader', ['$cacheFactory', function($cacheFactory) {
+    var cache = $cacheFactory('asset');
+    return {
+      get: function(key, cbFn) {
+        var value = cache.get(key);
+        if (value)
+          cbFn(value);
+        else
+          paper.project.importSVG('/static/images/' + key + '.svg', function(group) {
+            cache.put(key, group);
+            cbFn(group);
           });
-          paper.view.draw();
-        }, 33.33);
-        // };
       }
     };
   }])

@@ -25,6 +25,11 @@ textarea {
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#003366', endColorstr='#000000',GradientType=0 ); /* IE6-9 */
 }
 
+#image-bucket {
+  position: absolute;
+  z-index: -1000;
+}
+
 
 #login-container {
   position: absolute;

@@ -1,5 +1,5 @@
 angular.module('Mover', [])
-  .service('Mover', ['Base', 'System', 'Canvas', 'Bus', 'Resource', 'Utils', function(Base, System, Canvas, Bus, Resource, Utils) {
+  .service('Mover', ['Base', 'System', 'Canvas', 'Emitter', 'Resource', 'Utils', function(Base, System, Canvas, Emitter, Resource, Utils) {
     var SPEED = .4,
       endpoint = '/api/v1/mover/:id',
       crudApi = Resource(endpoint, {}, {});
@@ -43,9 +43,9 @@ angular.module('Mover', [])
         if (destination.object.bounds.center.equals(this.currentPosition))
           return false;
 
-        this.path = Path.Circle({
-          center: this.currentPosition,
-          radius: 1,
+        this.path = new Path.Rectangle({
+          from: [this.currentPosition.x, this.currentPosition.y - 20],
+          to: [this.currentPosition.x + 1, this.currentPosition.y + 20],
           fillColor: this.options.color
             || Utils.luminosity(this.waypoints[0].color, 0.8)
             || '#fff'
@@ -85,21 +85,24 @@ angular.module('Mover', [])
         Canvas.tracks.addChild(this.trajectory);
         Canvas.movers.addChild(this.path);
 
-        Bus.animate(function(position, percentComplete, time) {
+        Emitter.animate(function(position, percentComplete, time) {
           var arcSize = 1 / this_.trajectory.curves.length,
             currentSegment = Math.ceil(percentComplete / arcSize) - (percentComplete === 0 ? 0 : 1),
             relativePosition = (position - currentSegment * arcSize) / arcSize;
-          this_.path.position = this_.trajectory.curves[currentSegment].getPointAt(Math.min(relativePosition, 0.999), true);
-        }, duration, this.transfer.bind(this_));
 
-        Bus.animate(function(position) {
+          var location = this_.trajectory.curves[currentSegment].getLocationAt(Math.min(relativePosition, 0.999), true);
+          this_.path.position = location.point;
+          this_.path.rotation = location.tangent.angle;
+        }, duration, 'easeInOutCubic', this.transfer.bind(this_));
+
+        Emitter.animate(function(position) {
           this_.trajectory.strokeColor = 'rgba('+Utils.hexToRgb('fff')+','+(position * 0.3)+')';
         }, 2000);
       },
       transfer: function transfer() {
         var this_ = this,
           trajectory = this.trajectory;
-        Bus.animate(function(position) {
+        Emitter.animate(function(position) {
           trajectory.strokeColor = 'rgba('+Utils.hexToRgb('fff')+','+((1 - position) * 0.3)+')';
         }, 1000, function() {
           trajectory.remove();
@@ -108,7 +111,7 @@ angular.module('Mover', [])
         
         setTimeout(function() {
           this_.cbFn();
-        }, this.options.layover || 50);
+        }, this.options.layover || 10);
       }
     });
   }]);
