@@ -44,8 +44,8 @@ angular.module('Mover', [])
           return false;
 
         this.path = new Path.Rectangle({
-          from: [this.currentPosition.x, this.currentPosition.y - 20],
-          to: [this.currentPosition.x + 1, this.currentPosition.y + 20],
+          from: [this.currentPosition.x - 3, this.currentPosition.y - 1],
+          to: [this.currentPosition.x + 3, this.currentPosition.y + 1],
           fillColor: this.options.color
             || Utils.luminosity(this.waypoints[0].color, 0.8)
             || '#fff'
@@ -80,7 +80,8 @@ angular.module('Mover', [])
           }
         };
 
-        var duration = this.trajectory.length * (this.options.speed ? (57 / this.options.speed) : 57);
+        var duration = this.trajectory.length * (this.options.speed ? (57 / this.options.speed) : 57),
+          lastRotation = 0;
 
         Canvas.tracks.addChild(this.trajectory);
         Canvas.movers.addChild(this.path);
@@ -92,7 +93,14 @@ angular.module('Mover', [])
 
           var location = this_.trajectory.curves[currentSegment].getLocationAt(Math.min(relativePosition, 0.999), true);
           this_.path.position = location.point;
-          this_.path.rotation = location.tangent.angle;
+          this_.path.rotation = location.tangent.angle - lastRotation;
+          lastRotation = location.tangent.angle;
+          var trail = this_.path.clone();
+          trail.fillColor = "#F00";
+          trail.insertBelow(this_.path);
+          Emitter.animate(function(position) {}, 100, function() {
+            trail.remove();
+          });
         }, duration, 'easeInOutCubic', this.transfer.bind(this_));
 
         Emitter.animate(function(position) {
