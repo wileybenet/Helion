@@ -4,6 +4,9 @@ var path = require('path'),
   Q = require('q'),
   mongoose = require('mongoose');
 
+// dependencies
+var log = require('../logger').appLogger;
+
 // helpers
 var retries = 0;
 
@@ -23,7 +26,7 @@ function connect(config) {
   mongoose.connect(connectionStr);
   
   db.on('error', function(err) {
-    console.log('mongo connection error:', err);
+    log.error('mongo connection error:', err);
     // console.log('\n reconnection #' + ++retries);
     // setTimeout(function() {
     //   connect(config);
@@ -32,10 +35,10 @@ function connect(config) {
 
   db.once('open', function(err) {
     if (err) {
-      console.log(' Error\n  mongo failed connection');
+      log.error('mongo failed connection');
       deferred.reject(true);
     } else {
-      console.log(' mongo connected\n  ' + configParams.dbName);
+      log.info('mongo connected %s', configParams.dbName);
       deferred.resolve(null);
     }
   });

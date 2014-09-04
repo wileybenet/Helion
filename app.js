@@ -1,5 +1,8 @@
 // dependencies
 var processInfo = require('./app/process.info'),
+  log = require('./app/logger').init({
+    name: 'helion'
+  }, processInfo),
   store = require('./app/store/mongo.store'),
   Server = require('./app/Server');
 
@@ -17,10 +20,10 @@ store.connect({
       ]
     });
   }, function() {
-    console.log('fatal error: mongodb connection failed');
+    log.fatal('mongodb connection failed');
     process.exit(1);
   });
 
 process.on('uncaughtException', function(err) {
-  console.log('uncaught', err, err.stack);
+  log.fatal('uncaught', err, err.stack);
 });

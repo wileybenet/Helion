@@ -6,6 +6,7 @@ var path = require('path'),
 
 // dependencies
 var session = require('./session'),
+  log = require('./logger').appLogger,
   resource = require('./resource'),
   models = require('./models'),
   User = models.User;
@@ -38,6 +39,6 @@ var Server = module.exports = function Server(config) {
   app.use(express.static(path.resolve(__dirname, '..', 'public')));
 
   this.internal = app.listen(config.port, config.ip, function() {
-    console.log(' SERVER listening\n  ' + this_.internal._connectionKey.substr(2));
+    log.info('server listening %s', this_.internal._connectionKey.substr(2));
   });
 };

@@ -4,7 +4,7 @@ var os = require('os'),
 function args(match) {
   var matchedArg;
   process.argv.forEach(function(arg) {
-    if (arg.replace('--', '') === match.replace('--', '')) {
+    if (arg.replace('--', '') === match.replace(/([A-Z])/g, function(m) { return '-' + m.toLowerCase(); }).replace('--', '')) {
       matchedArg = arg
     }
   });
@@ -18,5 +18,6 @@ module.exports = {
     .find({family: 'IPv4', internal: false})
     .value()
     .address,
-  port: args('production') ? 80 : 8000
+  port: args('production') ? 80 : (args('dev') ? 8000 : 8000),
+  logLevel: args('production') ? 'error' : (args('dev') ? 'info' : 'warn'),
 };
