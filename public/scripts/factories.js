@@ -17,7 +17,7 @@ angular.module('factories', [])
 
     setInterval(function() {
       eventListeners.frame.forEach(function(fn) {
-        fn();
+        fn(+new Date() - fn._start);
       });
       paper.view.draw();
     }, 33.33);
@@ -36,6 +36,7 @@ angular.module('factories', [])
       },
       onFrame: function onFrame(cbFn) {
         cbFn._id = id++;
+        cbFn._start = +new Date();
         if (cbFn._name) {
           for (var i = eventListeners.frame.length - 1; i >= 0; i--) {
             if (cbFn._name === eventListeners.frame[i]._name) {

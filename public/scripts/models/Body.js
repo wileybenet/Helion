@@ -1,7 +1,42 @@
 angular.module('Body', [])
   .service('Body', ['Base', 'Resource', 'Emitter', 'Loader', 'Canvas', 'Utils', function(Base, Resource, Emitter, Loader, Canvas, Utils) {
     var endpoint = '/api/v1/body/:id',
-      crudApi = Resource(endpoint, {}, {});
+      crudApi = Resource(endpoint, {}, {}),
+      groupId = 0;
+
+    function drillIntoGroup(group) {
+      var paths = [];
+      group.children.forEach(function(path) {
+        var newPath,
+          westPoint, eastPoint;
+        if (path instanceof Shape) {
+          newPath = path.toPath();
+          path.remove();
+          path = newPath;
+        }
+        if (path.children && path.children.length > 0) {
+          subPoints = drillIntoGroup(path);
+        } else {
+          westPoint = path.segments[0].point;
+          eastPoint = path.segments[0].point;
+          path.segments.forEach(function(item) {
+            item._groupId = groupId++;
+            item.point.original_x = item.point.x;
+            item.point.original_y = item.point.y;
+            if (item.point.x < westPoint.x) {
+              westPoint = item.point;
+            }
+            if (item.point.x > eastPoint.x) {
+              eastPoint = item.point;
+            }
+          });
+          path._westPoint = westPoint;
+          path._eastPoint = eastPoint;
+        }
+        paths.push(path);
+      });
+      return paths;
+    }
 
     return Base.extend({
       all: crudApi.query,
@@ -65,27 +100,99 @@ angular.module('Body', [])
         this.path = new Group([this.object]);
 
         this.path.onMouseUp = this.onMouseUp.bind(this);
+        this.path.onMouseDrag = this.onMouseDrag.bind(this);
 
         Canvas.bodies.addChild(this.path);
 
         Emitter.on('camera:reset', function(evt) {
-          if (this_.surface) {
+          if (this_._focused) {
+            this_._focused = false;
             this_.surface.remove();
             delete this_.surface;
           }
         });
       },
+      onMouseDrag: function onMouseDrag(evt) {
+        if (this._focused) {
+          this._currentRotation += evt.delta.x;
+          this._drawSurface();
+        }
+      },
+      _projectionToCartisian: function _projectionToCartisian(point) {
+        var x_0 = point.original_x - this.surface._center.x,
+          y_0 = this.surface._center.y - point.original_y,
+          λ = (2 * Math.PI * x_0) / (3 * this.surface.R * Math.sqrt((Math.PI * Math.PI / 3) - Math.pow(y_0 / this.surface.R, 2))),
+          φ = y_0 / this.surface.R;
+
+        var rotation = λ + Math.PI / 3 + (this._currentRotation / 63 * Math.PI);
+
+        return {
+          x: this.surface.R * Math.cos(φ) * Math.cos(rotation),
+          y: this.surface.R * Math.cos(φ) * Math.sin(rotation),
+          z: this.surface.R * Math.sin(φ)
+        };
+      },
+      _drawSurface: function _drawSurface() {
+        if (!this.surface)
+            return false;
+
+        var this_ = this,
+          groups = {};
+
+        this.surfacePaths.forEach(function(path) {
+          path.visible = true;
+          var westCoords = this_._projectionToCartisian(path._westPoint), 
+            eastCoords = this_._projectionToCartisian(path._eastPoint),
+            bias = -1;
+
+          if (westCoords.x > 0 && eastCoords.x < 0) {
+            bias = 1;
+          } else if (westCoords.x < 0 && eastCoords.x < 0) {
+            path.visible = false;
+          }
+
+          path.segments.pluck('point').forEach(function(point) {
+            coords = this_._projectionToCartisian(point);
+            if (coords.x > 0) {
+              point.x = coords.y;
+            } else {
+              point.x = Math.sqrt(this_.surface.R * this_.surface.R - coords.z * coords.z) * bias;
+            }
+            point.y = this_.surface._center.y - coords.z;
+          });
+        });
+      },
       onMouseUp: function onMouseUp(evt) {
         var this_ = this;
 
+        if (this._focused)
+          return false;
+
         Canvas.focusCamera(this.object.position, 20 / this.model.config.radius);
+        this._focused = true;
 
         Loader.get('eris', function(group) {
-          group.scale(this_.path.bounds.getWidth() / group.bounds.getWidth());
-          group.position.x = this_.path.position.x;
-          group.position.y = this_.path.position.y;
-          this_.path.addChild(group);
           this_.surface = group;
+          this_.surfacePaths = drillIntoGroup(this_.surface);
+
+          this_.surface._center = {
+            x: this_.surface.bounds.getWidth() / 2,
+            y: this_.surface.bounds.getHeight() / 2
+          };
+          this_.surface.R = this_.surface.bounds.getWidth() / (Math.PI * Math.sqrt(3));
+
+          this_._currentRotation = 30;
+          this_._drawSurface();
+
+          this_.surface.scale(this_.path.bounds.getHeight() / this_.surface.bounds.getHeight());
+          this_.surface.position.x = this_.path.position.x;
+          this_.surface.position.y = this_.path.position.y;
+          this_.path.addChild(this_.surface);
+
+          // this_._revolve = Emitter.onFrame(function(time) {
+          //   this_._currentRotation = time / 250;
+          //   this_._drawSurface();
+          // });
         });
       },
       focus: function focus() {

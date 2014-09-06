@@ -1,14 +1,37 @@
 // libraries
-var _ = require('lodash-node');
+var crypto = require('crypto'),
+  _ = require('lodash-node');
 
 // dependencies
-var User = require('./models').User;
+var log = require('./logger'),
+  User = require('./models').User;
 
 var sessionId;
 
 // helper
+function encrypt(str, key) {
+  var cipher = crypto.createCipher('aes192', key.toString().replace(/[^A-z]/g, '')),
+    crypted = cipher.update(str, 'utf8', 'hex');
+  crypted += cipher.final('hex');
+  return crypted;
+}
+function decrypt(str, key) {
+  var decipher = crypto.createDecipher('aes192', key.toString().replace(/[^A-z]/g, '')),
+    dec = decipher.update(str, 'hex', 'utf8');
+  dec += decipher.final('utf8');
+  return dec;
+}
 function serialize(user) {
-  return user.authorization+'-'+user._id;
+  return encrypt(user.authorization, user._id)+'-'+user._id;
+}
+function deserialize(cookie) {
+  if (!cookie)
+    return null;
+  var parts = cookie.split(/-(.+)?/);
+  return {
+    _id: parts[1],
+    authorization: decrypt(parts[0], parts[1])
+  };
 }
 
 // module api
@@ -73,11 +96,7 @@ var session = module.exports = {
     }
   },
   deserialize: function(req, res, next) {
-    var parts = (req.cookies[sessionId] || '').split(/-(.+)?/);
-    req.user = {
-      _id: parts[1],
-      authorization: parts[0]
-    };
+    req.user = deserialize(req.cookies[sessionId] || '');
     next();
   }
 };

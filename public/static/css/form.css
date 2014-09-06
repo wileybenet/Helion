@@ -29,7 +29,6 @@ form .footer button:disabled {
 }
 form .error {
   padding: 11px 10px;
-  margin-bottom: 15px;
 }
 form .error * {
   font-size: 12px;
@@ -44,9 +43,6 @@ form.trans .row input {
   color: #EEE;
   border: 0;
 }
-form.trans .error {
-  background-color: #FFF;
-}
 form.trans .error * {
-  color: #D10000;
+  color: #DDA034;
 }
