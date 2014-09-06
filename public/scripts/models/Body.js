@@ -68,19 +68,24 @@ angular.module('Body', [])
           this_.focus();
           paper.view.draw();
         });
-        this.object.fillColor = {
+        this.object.fillColor = Utils.luminosity(options.fill, 0);
+
+
+        this.objectShade = this.object.clone();
+        this.objectShade.fillColor = {
           gradient: {
             stops: [
-              [Utils.luminosity(options.fill, 0.2), 0.05],
-              [Utils.luminosity(options.fill, -0.1), 0.3],
-              [Utils.luminosity(options.fill, -0.5), 0.7],
-              ['#000', 1]
+              new Color(0,0,0,0),
+              new Color(0,0,0,0.1),
+              new Color(0,0,0,0.4),
+              new Color(0,0,0,.7)
             ],
             radial: true
           },
-          origin: [this.object.position.x-(radius*0.5), this.object.position.y],
+          origin: [this.object.position.x-(radius*0.75), this.object.position.y],
           destination: this.object.bounds.rightCenter,
         };
+
 
         if (options.stroke) {
           this.object.strokeColor = Utils.luminosity(options.stroke, -0.3);
@@ -97,7 +102,7 @@ angular.module('Body', [])
           scale: []
         };
 
-        this.path = new Group([this.object]);
+        this.path = new Group([this.object, this.objectShade]);
 
         this.path.onMouseUp = this.onMouseUp.bind(this);
         this.path.onMouseDrag = this.onMouseDrag.bind(this);
@@ -114,6 +119,7 @@ angular.module('Body', [])
       },
       onMouseDrag: function onMouseDrag(evt) {
         if (this._focused) {
+          this._revolve && this._revolve();
           this._currentRotation += evt.delta.x;
           this._drawSurface();
         }
@@ -160,6 +166,10 @@ angular.module('Body', [])
             }
             point.y = this_.surface._center.y - coords.z;
           });
+          // path.curves.forEach(function(curve) {
+          //   curve.handle1
+          //   curve.handle2
+          // });
         });
       },
       onMouseUp: function onMouseUp(evt) {
@@ -189,10 +199,14 @@ angular.module('Body', [])
           this_.surface.position.y = this_.path.position.y;
           this_.path.addChild(this_.surface);
 
-          // this_._revolve = Emitter.onFrame(function(time) {
-          //   this_._currentRotation = time / 250;
-          //   this_._drawSurface();
-          // });
+          this_.surface.insertAbove(this_.path.firstChild);
+
+          window.path = this_.path;
+
+          this_._revolve = Emitter.onFrame(function(time) {
+            this_._currentRotation = time / 250;
+            this_._drawSurface();
+          });
         });
       },
       focus: function focus() {
