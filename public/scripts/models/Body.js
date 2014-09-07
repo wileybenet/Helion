@@ -53,7 +53,6 @@ angular.module('Body', [])
 
         this.name = model.name;
         this.color = Utils.luminosity(options.fill, 0);
-        this.styles = {};
         this.object = new Path.Circle({
           radius: radius,
           center: new Point(model.position[0] / 100 * ratio, model.position[1] / 100 * ratio),
@@ -85,6 +84,8 @@ angular.module('Body', [])
           origin: [this.object.position.x-(radius*0.75), this.object.position.y],
           destination: this.object.bounds.rightCenter,
         };
+        this.objectShade.strokeColor = "#C00";
+        this.object.strokeWidth = 0.25;
 
 
         if (options.stroke) {
@@ -94,7 +95,6 @@ angular.module('Body', [])
           this.object.shadowColor = Utils.luminosity(options.shadow || options.stroke, 0);
           this.object.shadowBlur = 30;
           this.object.shadowOffset = new Point(0, 0);
-          this.styles.strokeColor = this.object.strokeColor;
         }
 
         this._listeners = {
