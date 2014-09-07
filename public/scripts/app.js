@@ -10,13 +10,14 @@ angular.module('Helion', ['ngResource', 'core', 'Canvas', 'System', 'Utilities']
       }
     };
   }])
-  .controller('CanvasCtrl', ['$scope', '$rootScope', '$q', 'Body', 'Mover', 'Canvas', 'System',
-  function($scope, $rootScope, $q, Body, Mover, Canvas, System) {
+  .controller('CanvasCtrl', ['$scope', '$rootScope', '$q', 'Body', 'Mover', 'Canvas', 'System', 'Loader',
+  function($scope, $rootScope, $q, Body, Mover, Canvas, System, Loader) {
     Canvas.$init();
 
     $q.all({
       bodies: Body.all().$promise,
-      movers: Mover.all().$promise
+      movers: Mover.all().$promise,
+      eris: Loader.get('eris')
     }).then(function(res) {
       var bodies = res.bodies.map(function(body) {
         return new Body(body);
@@ -29,6 +30,10 @@ angular.module('Helion', ['ngResource', 'core', 'Canvas', 'System', 'Utilities']
 
       paper.view.draw();
       $scope.canvasLoaded = true;
+
+      setTimeout(function() {
+        $('#main-canvas').fadeTo('fast', 1);
+      }, 0);
     });
   }]);
 

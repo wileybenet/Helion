@@ -86,18 +86,26 @@ angular.module('factories', [])
       }
     };
   }])
-  .factory('Loader', ['$cacheFactory', function($cacheFactory) {
-    var cache = $cacheFactory('asset');
+  .factory('Loader', ['$q', '$cacheFactory', 'Log', function($q, $cacheFactory, Log) {
+    var cache = $cacheFactory('asset'),
+      availableFiles = [
+        'eris'
+      ];
     return {
-      get: function(key, cbFn) {
-        var value = cache.get(key);
-        if (value)
-          cbFn(value);
+      get: function(key) {
+        var deferred = $q.defer(),
+          value;
+        key = key.toLowerCase();
+        if (!availableFiles.contains(key))
+          deferred.reject(Log.error('"' + key + '.svg" is not an available file'));
+        else if (value = cache.get(key))
+          deferred.resolve(value);
         else
           paper.project.importSVG('/static/images/' + key + '.svg', function(group) {
             cache.put(key, group);
-            cbFn(group);
+            deferred.resolve(group);
           });
+        return deferred.promise;
       }
     };
   }])
@@ -123,3 +131,24 @@ angular.module('factories', [])
       return Res;
     };
   }])
+  .factory('Log', [function() {
+    var debugging = false;
+
+    var api = {
+      _errors: [],
+      error: function error(error) {
+        this._errors.push(error);
+        if (debugging) {
+          console.error(error);
+        }
+      },
+      dump: function dump() {
+        this._errors.forEach(function(err) {
+          console.log(err);
+        });
+      }
+    };
+
+    window.Log = api;
+    return api;
+  }]);

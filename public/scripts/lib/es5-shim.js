@@ -499,8 +499,11 @@ defineProperties(ArrayPrototype, {
                 return item[key];
             });
         }
-    },
-    groupBy: function(key) {
+    }
+}, !properlyBoxesContext(ArrayPrototype.pluck));
+
+defineProperties(ArrayPrototype, {
+    groupBy: function groupBy(key) {
         if (arguments.length === 0) {
             return [];
         } else {
@@ -512,7 +515,51 @@ defineProperties(ArrayPrototype, {
             return groups;
         }
     }
-}, !properlyBoxesContext(ArrayPrototype.pluck));
+}, !properlyBoxesContext(ArrayPrototype.groupBy));
+
+defineProperties(ArrayPrototype, {
+    contains: function contains(desiredItem) {
+        if (arguments.length === 0) {
+            return undefined;
+        } else {
+            var success = undefined;
+            this.forEach(function(item) {
+                if (desiredItem === item) {
+                    success = true;
+                }
+            });
+            return success;
+        }
+    }
+}, !properlyBoxesContext(ArrayPrototype.contains));
+
+defineProperties(ArrayPrototype, {
+    findWhere: function findWhere(properties) {
+        if (arguments.length === 0) {
+            return undefined;
+        } else {
+            var foundItem = undefined;
+            this.forEach(function(item) {
+                var prop,
+                    matched = true && !foundItem;
+                for (prop in properties) {
+                    if (item[prop] !== properties[prop]) {
+                        matched = false;
+                    }
+                }
+                if (matched)
+                    foundItem = item;
+            });
+            return foundItem;
+        }
+    }
+}, !properlyBoxesContext(ArrayPrototype.findWhere));
+
+defineProperties(ArrayPrototype, {
+    last: function last() {
+        return this[this.length - 1];
+    }
+}, !properlyBoxesContext(ArrayPrototype.last));
 
 // ES5 15.4.4.20
 // http://es5.github.com/#x15.4.4.20
