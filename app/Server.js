@@ -7,6 +7,7 @@ var path = require('path'),
 // dependencies
 var session = require('./session'),
   log = require('./logger').appLogger,
+  templates = require('./templates'),
   resource = require('./resource'),
   models = require('./models'),
   User = models.User;
@@ -27,6 +28,9 @@ var Server = module.exports = function Server(config) {
   app.use(bodyParser.json());
   app.use(cookieParser());
   app.use(session.deserialize);
+
+  app.get('/', templates.home);
+  app.get('/index.html', templates.home)
 
   app.post('/session', session.authenticate, session.start);
   app.delete('/session', session.end);

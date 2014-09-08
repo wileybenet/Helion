@@ -1,51 +1,17 @@
 angular.module('Body', [])
-  .service('Body', ['Base', 'Resource', 'Emitter', 'Loader', 'Canvas', 'Utils',
-  function(Base, Resource, Emitter, Loader, Canvas, Utils) {
+  .service('Body', ['Base', 'Map', 'Resource', 'Emitter', 'Loader', 'Canvas', 'Utils',
+  function(Base, Map, Resource, Emitter, Loader, Canvas, Utils) {
     var endpoint = '/api/v1/body/:id',
       crudApi = Resource(endpoint, {}, {}),
       groupId = 0;
-
-    function drillIntoGroup(group) {
-      var paths = [];
-      group.children.forEach(function(path) {
-        var newPath,
-          westPoint, eastPoint;
-        if (path instanceof Shape) {
-          newPath = path.toPath();
-          path.remove();
-          path = newPath;
-        }
-        if (path.children && path.children.length > 0) {
-          paths = paths.concat(drillIntoGroup(path));
-        } else {
-          path.flatten(3);
-          westPoint = path.segments[0].point;
-          eastPoint = path.segments[0].point;
-          path.segments.forEach(function(item) {
-            item._groupId = groupId++;
-            item.point.original_x = item.point.x;
-            item.point.original_y = item.point.y;
-            if (item.point.x < westPoint.x) {
-              westPoint = item.point;
-            }
-            if (item.point.x > eastPoint.x) {
-              eastPoint = item.point;
-            }
-          });
-          path._westPoint = westPoint;
-          path._eastPoint = eastPoint;
-
-          paths.push(path);
-        }
-      });
-      return paths;
-    }
 
     return Base.extend({
       all: crudApi.query,
       create: crudApi.save
     }, {
       initialize: function Body(model) {
+        if (!model)
+          return;
         var this_ = this,
           ratio = $(window).width(),
           radius = model.config.radius / 100 * ratio,
@@ -105,7 +71,7 @@ angular.module('Body', [])
           this.objectNightShade
         ]);
 
-        this.clippingGroup.clipped = true;
+        // this.clippingGroup.clipped = true;
 
         this.path = new Group([
           this.objectDropShadow,
@@ -121,6 +87,14 @@ angular.module('Body', [])
           if (this_._focused) {
             this_._focused = false;
           }
+          this_.objectNightShade.visible = true;
+          this_.objectNightShade.fillColor.gradient.stops = [
+            new Color(0,0,0,0),
+            new Color(0,0,0,0.3),
+            new Color(0,0,0,0.7),
+            new Color(0,0,0,1)
+          ];
+          this_.map && this_.map.stop && this_.map.stop();
         });
         this.model.on('update', function() {
           this_.object.scale((this.config.radius / 100 * ratio) / radius);
@@ -131,87 +105,15 @@ angular.module('Body', [])
         });
 
         Loader.get(this.name).then(function(group) {
-          this_.surface = group;
-          this_.surfacePaths = drillIntoGroup(this_.surface);
-
-          this_.surface._center = {
-            x: this_.surface.bounds.getWidth() / 2,
-            y: this_.surface.bounds.getHeight() / 2
-          };
-          this_.surface.R = this_.surface.bounds.getWidth() / (Math.PI * Math.sqrt(3));
-
-          this_._currentRotation = -20;
-          this_._drawSurface();
-
-          this_.surface.scale(this_.objectClippingMask.bounds.getHeight() / this_.surface.bounds.getHeight() * 0.92);
-          this_.surface.position.x = this_.path.position.x;
-          this_.surface.position.y = this_.path.position.y;
-
-          this_.clippingGroup.insertChild(2, this_.surface);
-
-          this_.surfacePaths.forEach(function(path) {
-            path.onMouseUp = function(evt) {
-              console.log(this.name);
-            };
-          });
-
-          this_.surfacePaths.findWhere({name: 'remove'}).remove();
+          this_.map = new Map.KavrayskiyVII(group, this_.object.clone());
+          this_.clippingGroup.insertChild(2, this_.map.path);
         });
       },
       onMouseDrag: function onMouseDrag(evt) {
         if (this._focused) {
-          this._revolve && this._revolve();
-          this._currentRotation += evt.delta.x;
-          this._drawSurface();
+          this.map.stop && this.map.stop();
+          this.map.rotate(evt.delta.x);
         }
-      },
-      _projectionToCartisian: function _projectionToCartisian(point) {
-        var x_0 = point.original_x - this.surface._center.x,
-          y_0 = this.surface._center.y - point.original_y,
-          λ = (2 * Math.PI * x_0) / (3 * this.surface.R * Math.sqrt((Math.PI * Math.PI / 3) - Math.pow(y_0 / this.surface.R, 2))),
-          φ = y_0 / this.surface.R;
-
-        var rotation = λ + Math.PI / 3 + (this._currentRotation / 63 * Math.PI);
-
-        return {
-          x: this.surface.R * Math.cos(φ) * Math.cos(rotation),
-          y: this.surface.R * Math.cos(φ) * Math.sin(rotation),
-          z: this.surface.R * Math.sin(φ)
-        };
-      },
-      _drawSurface: function _drawSurface() {
-        if (!this.surface)
-            return false;
-
-        var this_ = this,
-          groups = {};
-
-        this.surfacePaths.forEach(function(path) {
-          path.visible = true;
-          var westCoords = this_._projectionToCartisian(path._westPoint), 
-            eastCoords = this_._projectionToCartisian(path._eastPoint),
-            bias = -1;
-
-          if (westCoords.x > 0 && eastCoords.x < 0) {
-            bias = 1;
-          } else if (westCoords.x < 0 && eastCoords.x < 0) {
-            path.visible = false;
-          }
-
-          path.segments.pluck('point').forEach(function(point) {
-            coords = this_._projectionToCartisian(point);
-            if (coords.x > 0) {
-              point.x = coords.y;
-            } else {
-              point.x = Math.sqrt(this_.surface.R * this_.surface.R - coords.z * coords.z) * bias;
-            }
-            point.y = this_.surface._center.y - coords.z;
-          });
-          // path.curves.forEach(function(curve) {
-          //   curve.handle1
-          //   curve.handle2
-          // });
-        });
       },
       onMouseUp: function onMouseUp(evt) {
         var this_ = this;
@@ -219,16 +121,194 @@ angular.module('Body', [])
         if (this._focused)
           return false;
 
-        Canvas.focusCamera(this.object.position, 15 / this.model.config.radius);
+        Canvas.focusCamera(this.object.position, 15 / this.model.config.radius, function(position) {
+          this_.objectNightShade.fillColor.gradient.stops = [
+            new Color(0,0,0,0),
+            new Color(0,0,0,0.3 - 0.3 * position),
+            new Color(0,0,0,0.7 - 0.7 * position),
+            new Color(0,0,0,1 - position)
+          ];
+        }, function() {
+          this_.objectNightShade.visible = false;
+        });
         this._focused = true;
 
-        // this._revolve = Emitter.onFrame(function(time) {
-        //   this_._currentRotation = time / 250;
-        //   this_._drawSurface();
-        // });
+        // this.map.revolve();
       },
       focus: function focus() {
         this.onMouseUp();
       }
     });
+  }])
+  .service('Map', ['$parse', 'Base', function($parse, Base) {
+    var EYE_DISTANCE = 5;
+
+    var Map = Base.extend({
+      initialize: function Map(projectedGroup, placeholder) {
+        this.path = projectedGroup;
+        this.projection = projectedGroup.clone();
+        this.projection.visible = false;
+        this.destinationBounds = placeholder.bounds;
+        this.constants = this._setProjectionConstants(this.path.bounds);
+        this._currentRotation = 0;
+
+        this.constants.d_v = 20;
+        this.constants.d_e = 0;
+
+        this.paths = this._formatPaths(this.path);
+
+        this.path.position.x = this.destinationBounds.centerX;
+        this.path.position.y = this.destinationBounds.centerY;
+        
+        this._update();
+
+        this.paths.findWhere({name: 'remove'}).remove();
+        placeholder.remove();
+      },
+      _setProjectionConstants: function _setProjectionConstants() {
+        // must return {x, y, factor} (a disproportionate scale factor)
+      },
+      _mapProjectionToSpherical: function _mapProjectionToSpherical(point) {
+        // must set point.λ and point.φ
+      },
+      _update: function _update() {
+        var this_ = this;
+        this.paths.forEach(function(path) {
+          path.visible = true;
+          var centerCoords = this_._transformSphericalToViewport(path),
+            bias = centerCoords.λ < 0 ? 1 : -1,
+            allHidden = true;
+
+          path.segments.pluck('point').forEach(function(point) {
+            var coords = this_._transformSphericalToViewport(point);
+
+            // if (coords.φ > 0) {
+              allHidden = false;
+              point.x = -coords.y;
+            // } else {
+              // point.x = 50 * bias;
+            // }
+            point.y = coords.x;
+          });
+
+          path.visible = !allHidden;
+        });
+      },
+      revolve: function revolve() {
+        var this_ = this;
+        this.stop = this.onFrame(function(time) {
+          this_.setRotation(time / 2000);
+        });
+      },
+      setRotation: function setRotation(pixelDistance) {
+        this._currentRotation = pixelDistance;
+        this._update();
+      },
+      rotate: function rotate(pixelDelta) {
+        this._currentRotation += pixelDelta;
+        this._update();
+      },
+      getRotation: function getRotation() {
+        return this._currentRotation / this.destinationBounds.width * 180;
+      },
+      _sphericalTranform: function _sphericalTranform(point) {
+        var coords = this._sphericalToCartesian(point, this._currentRotation);
+        return {
+          λ: Math.atan2(coords.x, coords.z),
+          φ: Math.atan2(coords.y, Math.sqrt(coords.z * coords.z + coords.x * coords.x))
+        };
+      },
+      _sphericalToCartesian: function _sphericalToCartesian(point, rotation) {
+        var newλ = rotation ? (point.λ + (rotation / point.R / 2 * Math.PI)) : point.λ;
+        return {
+          x: Math.cos(point.φ) * Math.cos(newλ),
+          y: Math.cos(point.φ) * Math.sin(newλ),
+          z: Math.sin(point.φ)
+        };
+      },
+      _transformSphericalToCartesian: function _transformSphericalToCartesian(point) {
+        var finalCoords,
+          sphericalCoords = this._sphericalTranform(point);
+        sphericalCoords.R = point.R;
+        finalCoords = this._sphericalToCartesian(sphericalCoords);
+        finalCoords.λ = sphericalCoords.λ;
+        finalCoords.φ = sphericalCoords.φ;
+        return finalCoords;
+      },
+      _transformSphericalToViewport: function _transformSphericalToViewport(point) {
+        var coords = this._transformSphericalToCartesian(point),
+          xi = coords.x * EYE_DISTANCE / (EYE_DISTANCE - coords.x),
+          yi = coords.y * EYE_DISTANCE / (EYE_DISTANCE - coords.y);
+
+        Math.asin(1 / EYE_DISTANCE);
+
+        return {
+          x: coords.x * point.R,
+          y: coords.y * point.R,
+          λ: coords.λ,
+          φ: coords.φ
+        }
+      },
+      _setRadius: function _setRadius(point) {
+        point.R = this.destinationBounds.width / 2;
+      },
+      _formatPaths: function _formatPaths(group) {
+        var this_ = this,
+          paths = [];
+        group.children.forEach(function(path) {
+          var newPath,
+            westPoint, eastPoint;
+          if (path instanceof Shape) {
+            newPath = path.toPath();
+            path.remove();
+            path = newPath;
+          }
+          if (path.children && path.children.length > 0) {
+            paths = paths.concat(this_._formatPaths(path));
+          } else {
+            path.flatten(10);
+            path.segments.pluck('point').forEach(function(point) {
+              point.x = point.x - this_.constants.x;
+              point.y *= this_.constants.factor;
+              point.y = point.y - this_.constants.y;
+              this_._setRadius(point);
+              this_._mapProjectionToSpherical(point);
+            });
+            this_._setRadius(path);
+            this_._mapProjectionToSpherical(path, 'bounds.centerX', 'bounds.centerY');
+            paths.push(path);
+
+            path.onMouseUp = function(evt) {
+              console.log(this.name);
+            };
+          }
+        });
+        return paths;
+      }
+    });
+
+    return {
+      KavrayskiyVII: Map.extend({
+        initialize: function KavrayskiyVII() {
+          this.$uper.constructor.apply(this, arguments);
+          // http://www.progonos.com/furuti/MapProj/Normal/CartHow/HowKav7/howKav7.html
+        },
+        _setProjectionConstants: function _setProjectionConstants(bounds) {
+          var W = bounds.width / 4,
+            H = Math.sqrt(4 / 3) * W;
+          return {
+            x: 4 * W / 2 + bounds.x,
+            y: 2 * H / 2 + bounds.y + 2.5,
+            R: 4 * W / (Math.PI * Math.sqrt(3)),
+            factor: 2 * H / bounds.height
+          };
+        },
+        _mapProjectionToSpherical: function _mapProjectionToSpherical(point, x, y) {
+          var x_0 = x ? $parse(x)(point) : point.x,
+            y_0 = y ? $parse(y)(point) : point.y;
+          point.λ = (2 * Math.PI * x_0) / (3 * this.constants.R * Math.sqrt((Math.PI * Math.PI / 3) - Math.pow(y_0 / this.constants.R, 2)));
+          point.φ = y_0 / this.constants.R;
+        }
+      })
+    }
   }]);

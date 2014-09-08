@@ -24,6 +24,8 @@ angular.module('Mover', [])
       all: crudApi.query
     }, {
       initialize: function Mover(options) {
+        if (!options)
+          return;
         var homeBody = System.get(options.home);
         this.currentPosition = homeBody.object.bounds.center
         this.waypoints = [homeBody].concat(options.waypoints.map(function(_id) {

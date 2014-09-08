@@ -23,7 +23,7 @@ angular.module('System', ['Body', 'Mover'])
       }
     }
   }])
-  .factory('Base', [function() {
+  .factory('Base', ['Emitter', function(Emitter) {
     function extend(prop1, prop2) {
       var property,
         parent = this,
@@ -39,12 +39,14 @@ angular.module('System', ['Body', 'Mover'])
       if (properties.hasOwnProperty('initialize')) {
         child = properties.initialize;
       } else {
-        child = function(){ return parent.apply(this, arguments); };
+        child = function() { return parent.apply(this, arguments); };
       }
       child.extend = extend.bind(child);
 
-      child.prototype = parent.prototype;
+      child.prototype = Object.create(parent.prototype);
       child.prototype.constructor = child;
+
+      child.prototype.$uper = parent.prototype;
 
       for (property in properties) {
         child.prototype[property] = properties[property];
@@ -60,6 +62,9 @@ angular.module('System', ['Body', 'Mover'])
     function Base() {
       return this.initialize.apply(this, arguments);
     }
+    Base.prototype = Emitter;
+    Base.prototype.constructor = Base;
+
     Base.extend = extend.bind(Base);
 
     return Base;

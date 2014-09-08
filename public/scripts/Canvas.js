@@ -24,7 +24,7 @@ angular.module('Canvas', [])
           }
         });
       },
-      focusCamera: function(location, zoom) {
+      focusCamera: function(location, zoom, stepFn, cbFn) {
         var x_0 = view.center.x,
           x_1 = location.x,
           dx = x_1 - x_0,
@@ -41,7 +41,10 @@ angular.module('Canvas', [])
             y_0 + (dy - (dy * (1 - position)) / (dz * position + z_0))
           ]);
           view.setZoom(z_0 + dz * position);
-        }, 500, 'easeInOutSine');
+          stepFn(position);
+        }, 500, 'easeInOutSine', function() {
+          cbFn();
+        });
       },
       resetCamera: function() {
         var x_0 = view.center.x,

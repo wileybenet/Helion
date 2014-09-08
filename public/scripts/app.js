@@ -10,8 +10,8 @@ angular.module('Helion', ['ngResource', 'core', 'Canvas', 'System', 'Utilities']
       }
     };
   }])
-  .controller('CanvasCtrl', ['$scope', '$rootScope', '$q', 'Body', 'Mover', 'Canvas', 'System', 'Loader',
-  function($scope, $rootScope, $q, Body, Mover, Canvas, System, Loader) {
+  .controller('CanvasCtrl', ['$scope', '$rootScope', '$q', 'Body', 'Mover', 'Canvas', 'System', 'Loader', 'User',
+  function($scope, $rootScope, $q, Body, Mover, Canvas, System, Loader, User) {
     Canvas.$init();
 
     $q.all({
@@ -35,6 +35,11 @@ angular.module('Helion', ['ngResource', 'core', 'Canvas', 'System', 'Utilities']
         $('#main-canvas').fadeTo('fast', 1);
       }, 0);
     });
+
+
+    window.Body = Body;
+    window.Mover = Mover;
+    window.User = User;
   }]);
 
 

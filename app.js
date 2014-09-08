@@ -3,7 +3,7 @@ var processInfo = require('./app/process.info'),
   log = require('./app/logger').init({
     name: 'helion'
   }, processInfo),
-  store = require('./app/store/mongo.store'),
+  store = require('./app/stores/mongo.store'),
   Server = require('./app/Server');
 
 store.connect({

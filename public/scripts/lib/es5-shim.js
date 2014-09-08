@@ -492,38 +492,44 @@ defineProperties(ArrayPrototype, {
 
 defineProperties(ArrayPrototype, {
     pluck: function pluck(key) {
+        var object = toObject(this),
+            self = splitString && isString(this) ? this.toString().split('') : object;
         if (arguments.length === 0) {
             return [];
         } else {
-            return this.map(function(item) {
+            return self.map(function(item) {
                 return item[key];
             });
         }
     }
-}, !properlyBoxesContext(ArrayPrototype.pluck));
+});
 
 defineProperties(ArrayPrototype, {
     groupBy: function groupBy(key) {
+        var object = toObject(this),
+            self = splitString && isString(this) ? this.toString().split('') : object;
         if (arguments.length === 0) {
             return [];
         } else {
             var groups = {};
-            this.forEach(function(item) {
+            self.forEach(function(item) {
                 groups[item[key]] = groups[item[key]] || [];
                 groups[item[key]].push(item);
             });
             return groups;
         }
     }
-}, !properlyBoxesContext(ArrayPrototype.groupBy));
+});
 
 defineProperties(ArrayPrototype, {
     contains: function contains(desiredItem) {
+        var object = toObject(this),
+            self = splitString && isString(this) ? this.toString().split('') : object;
         if (arguments.length === 0) {
             return undefined;
         } else {
             var success = undefined;
-            this.forEach(function(item) {
+            self.forEach(function(item) {
                 if (desiredItem === item) {
                     success = true;
                 }
@@ -531,7 +537,7 @@ defineProperties(ArrayPrototype, {
             return success;
         }
     }
-}, !properlyBoxesContext(ArrayPrototype.contains));
+});
 
 defineProperties(ArrayPrototype, {
     findWhere: function findWhere(properties) {
@@ -553,7 +559,7 @@ defineProperties(ArrayPrototype, {
             return foundItem;
         }
     }
-}, !properlyBoxesContext(ArrayPrototype.findWhere));
+});
 
 defineProperties(ArrayPrototype, {
     last: function last() {
