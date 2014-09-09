@@ -141,7 +141,7 @@ angular.module('Body', [])
     });
   }])
   .service('Map', ['$parse', 'Base', function($parse, Base) {
-    var EYE_DISTANCE = 5;
+    var EYE_DISTANCE = 10;
 
     var Map = Base.extend({
       initialize: function Map(projectedGroup, placeholder) {
@@ -152,8 +152,8 @@ angular.module('Body', [])
         this.constants = this._setProjectionConstants(this.path.bounds);
         this._currentRotation = 0;
 
-        this.constants.d_v = 20;
-        this.constants.d_e = 0;
+        this.constants.thresholdφ = Math.PI / 2 - Math.acos(1 / EYE_DISTANCE);
+        this.constants.scaleFactor = Math.cos(this.constants.thresholdφ);
 
         this.paths = this._formatPaths(this.path);
 
@@ -176,18 +176,17 @@ angular.module('Body', [])
         this.paths.forEach(function(path) {
           path.visible = true;
           var centerCoords = this_._transformSphericalToViewport(path),
-            bias = centerCoords.λ < 0 ? 1 : -1,
+            bias = centerCoords.λ > 0 ? 1 : -1,
             allHidden = true;
 
           path.segments.pluck('point').forEach(function(point) {
-            var coords = this_._transformSphericalToViewport(point);
+            var coords = this_._transformSphericalToViewport(point, bias);
 
-            // if (coords.φ > 0) {
+            if (point.visible) {
               allHidden = false;
-              point.x = -coords.y;
-            // } else {
-              // point.x = 50 * bias;
-            // }
+            }
+
+            point.x = -coords.y;
             point.y = coords.x;
           });
 
@@ -211,6 +210,35 @@ angular.module('Body', [])
       getRotation: function getRotation() {
         return this._currentRotation / this.destinationBounds.width * 180;
       },
+      _transformSphericalToViewport: function _transformSphericalToViewport(point, bias) {
+        var coords = this._transformSphericalToCartesian(point, bias),
+          xi = coords.x * EYE_DISTANCE / (EYE_DISTANCE - coords.z),
+          yi = coords.y * EYE_DISTANCE / (EYE_DISTANCE - coords.z);
+
+        return {
+          x: xi * point.R * this.constants.scaleFactor,
+          y: yi * point.R * this.constants.scaleFactor,
+          λ: coords.λ,
+          φ: coords.φ
+        }
+      },
+      _transformSphericalToCartesian: function _transformSphericalToCartesian(point, bias) {
+        var finalCoords,
+          sphericalCoords = this._sphericalTranform(point);
+        sphericalCoords.R = point.R;
+
+        point.visible = true;
+        if (sphericalCoords.φ < this.constants.thresholdφ && bias) {
+          sphericalCoords.φ = this.constants.thresholdφ;
+          sphericalCoords.λ = Math.abs(sphericalCoords.λ) * bias;
+          point.visible = false;
+        }
+
+        finalCoords = this._sphericalToCartesian(sphericalCoords);
+        finalCoords.λ = sphericalCoords.λ;
+        finalCoords.φ = sphericalCoords.φ;
+        return finalCoords;
+      },
       _sphericalTranform: function _sphericalTranform(point) {
         var coords = this._sphericalToCartesian(point, this._currentRotation);
         return {
@@ -225,29 +253,6 @@ angular.module('Body', [])
           y: Math.cos(point.φ) * Math.sin(newλ),
           z: Math.sin(point.φ)
         };
-      },
-      _transformSphericalToCartesian: function _transformSphericalToCartesian(point) {
-        var finalCoords,
-          sphericalCoords = this._sphericalTranform(point);
-        sphericalCoords.R = point.R;
-        finalCoords = this._sphericalToCartesian(sphericalCoords);
-        finalCoords.λ = sphericalCoords.λ;
-        finalCoords.φ = sphericalCoords.φ;
-        return finalCoords;
-      },
-      _transformSphericalToViewport: function _transformSphericalToViewport(point) {
-        var coords = this._transformSphericalToCartesian(point),
-          xi = coords.x * EYE_DISTANCE / (EYE_DISTANCE - coords.x),
-          yi = coords.y * EYE_DISTANCE / (EYE_DISTANCE - coords.y);
-
-        Math.asin(1 / EYE_DISTANCE);
-
-        return {
-          x: coords.x * point.R,
-          y: coords.y * point.R,
-          λ: coords.λ,
-          φ: coords.φ
-        }
       },
       _setRadius: function _setRadius(point) {
         point.R = this.destinationBounds.width / 2;
