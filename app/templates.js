@@ -1,40 +1,30 @@
 // libraries
-var path = require('path'),
-  fs = require('fs'),
-  _ = require('lodash-node'),
+var fs = require('fs'),
   Handlebars = require('handlebars');
 
 // dependencies
-var log = require('./logger').appLogger;
-
-// helpers
-function readDir(dir, base) {
-  var files = [];
-  fs.readdirSync(dir).forEach(function(name) {
-    var dirname;
-    if (fs.lstatSync(dirname = dir + '/' + name).isDirectory()) {
-      files = files.concat(readDir(dirname, name + '/'));
-    } else {
-      files.push(base + name);
-    }
-  });
-  return files;
-}
+var processInfo = require('./process.info'),
+  log = require('./logger').appLogger,
+  compiler = require('./compiler'),
+  assets = require('./assets');
 
 // html cache
 var compiledTemplates = {
   home: (function() {
     var template = Handlebars.compile(fs.readFileSync(__dirname + '/views/home.html').toString()),
-      files = _.compact(readDir(path.resolve(__dirname, '..', 'public/scripts'), '')
-        .map(function(fileName) {
-          return fileName.match(/\.js$/) ? {
-            path: fileName
-          } : false;
-        }));
-
-    files.unshift(files.splice(_.findIndex(files, {path: 'lib/angular.js'}), 1)[0]);
-
-    return template({ scripts: files });
+      scripts, sheets;
+    if (processInfo.env === 'prod' || processInfo.env === 'test') {
+      scripts = [{
+        path: 'assets/' + compiler.getHashName('js')
+      }];
+      sheets = [{
+        path: 'assets/' + compiler.getHashName('css')
+      }];
+    } else {
+      scripts = assets.js;
+      sheets = assets.css;
+    }
+    return template({ scripts: scripts, sheets: sheets });
   }())
 }
 

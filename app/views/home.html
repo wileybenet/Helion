@@ -2,17 +2,17 @@
 <html data-ng-app="Helion" data-ng-controller="AppCtrl">
 <head>
   <title>Helion</title>
-  <link rel="stylesheet" type="text/css" href="static/css/main.css">
-  <link rel="stylesheet" type="text/css" href="static/css/form.css">
-  <link rel="stylesheet" type="text/css" href="static/css/font-awesome.min.css">
+  {{#sheets}}
+  <link rel="stylesheet" type="text/css" href="{{path}}">
+  {{/sheets}}
   {{#scripts}}
-  <script type="text/javascript" src="scripts/{{path}}"></script>
+  <script type="text/javascript" src="{{path}}"></script>
   {{/scripts}}
 </head>
   <body data-ng-controller="CanvasCtrl">
     <div id="image-bucket"></div>
     <div id="profile" data-ng-if="$root.user">
-      {{$root.user.username}}
+      <span data-ng-bind="$root.user.username"></span>
       <a href="" data-ng-click="$root.user.$logout()">
         <i class="go fa fa-power-off"></i>
       </a>

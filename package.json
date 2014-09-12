@@ -15,7 +15,9 @@
     "bcrypt": "^0.8.0",
     "mongoose": "^3.8.15",
     "bunyan": "^1.0.1",
-    "handlebars": "^2.0.0"
+    "handlebars": "^2.0.0",
+    "uglify-js": "^2.4.15",
+    "clean-css": "^2.2.15"
   },
   "devDependencies": {
     "grunt": "^0.4.5",

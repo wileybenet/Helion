@@ -33,7 +33,7 @@ var Server = module.exports = function Server(config) {
   app.get('/index.html', templates.home)
 
   app.post('/session', session.authenticate, session.start);
-  app.delete('/session', session.end);
+  app.delete('/session', session.terminate);
   app.get('/session', session.current);
 
   resources.forEach(function(name) {

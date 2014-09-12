@@ -20,4 +20,5 @@ module.exports = {
     .address,
   port: args('production') ? 80 : (args('dev') ? 8000 : 8000),
   logLevel: args('production') ? 'error' : (args('dev') ? 'info' : 'warn'),
+  env: args('production') ? 'prod' : (args('dev') ? 'dev' : 'test')
 };

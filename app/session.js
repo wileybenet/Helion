@@ -3,7 +3,7 @@ var crypto = require('crypto'),
   _ = require('lodash-node');
 
 // dependencies
-var log = require('./logger'),
+var log = require('./logger').appLogger,
   User = require('./models').User;
 
 var sessionId;
@@ -50,7 +50,7 @@ var session = module.exports = {
           return next();
         } else {
           if (user && user.validPassword(req.body.password)) {
-            console.log(user);
+            log.info(user);
             req.user = user;
           } else {
             res.send({ error: 'incorrect username or password' });
@@ -77,7 +77,7 @@ var session = module.exports = {
       res.end();
     }
   },
-  end: function(req, res) {
+  terminate: function(req, res) {
     res.clearCookie(sessionId)
       .send({success: true})
       .end();
