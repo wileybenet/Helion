@@ -9,6 +9,10 @@ build:
     - npm-install
     - npm-test
     - script:
+        name: build assets
+        code: |
+          node build
+    - script:
         name: echo nodejs information
         code: |
           echo "node version $(node -v) running"
