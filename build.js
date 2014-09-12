@@ -25,7 +25,7 @@ fs.readdirSync(__dirname + '/public/assets/').forEach(function(currentName) {
   } else {
     console.log(' no ' + type + ' changes detected');
   }
-  requiredFileTypes.splice(requiredFileTypes.indexOf('js'), 1);
+  requiredFileTypes.splice(requiredFileTypes.indexOf(type), 1);
 });
 
 requiredFileTypes.forEach(function(type) {

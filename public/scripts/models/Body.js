@@ -15,13 +15,13 @@ angular.module('Body', ['Map'])
         var this_ = this,
           ratio = $(window).width(),
           radius = model.config.radius / 100 * ratio,
-          options = model.config || {},
           resource = Resource(endpoint, { id: '@_id' }, {});
 
         this.model = new resource(model);
 
         this.name = model.name;
-        this.color = Utils.luminosity(options.fill, 0);
+        this.options = model.config || {};
+        this.color = Utils.luminosity(this.options.fill, 0);
         this.object = new Path.Circle({
           radius: radius,
           center: new Point(model.position[0] / 100 * ratio, model.position[1] / 100 * ratio),
@@ -30,9 +30,10 @@ angular.module('Body', ['Map'])
         this.object.fillColor = {
           gradient: {
             stops: [
-              [Utils.luminosity(options.fill, 0.2), 0.05],
-              [Utils.luminosity(options.fill, -0.1), 0.3],
-              [Utils.luminosity(options.fill, -0.5), 0.7], ['#000', 1]
+              [Utils.luminosity(this.options.fill, 0), 0.05],
+              [Utils.luminosity(this.options.fill, 0), 0.3],
+              [Utils.luminosity(this.options.fill, 0), 0.7],
+              [Utils.luminosity(this.options.fill, 0), 1]
             ],
             radial: true
           },
@@ -61,13 +62,13 @@ angular.module('Body', ['Map'])
           shadowColor: '#000',
           shadowBlur: 6,
           shadowOffset: new Point(5, 5),
-          // strokeColor: options.stroke ? Utils.luminosity(options.stroke, -0.3) : '#000',
-          // strokeWidth: options.strokeWidth || 2,
-          // strokeOpacity: options.strokeOpacity || 0.2
+          // strokeColor: this.options.stroke ? Utils.luminosity(this.options.stroke, -0.3) : '#000',
+          // strokeWidth: this.options.strokeWidth || 2,
+          // strokeOpacity: this.options.strokeOpacity || 0.2
         };
 
-        if (options.stroke) {
-          this.objectDropShadow.shadowColor = Utils.luminosity(options.shadow || options.stroke, 0);
+        if (this.options.stroke) {
+          this.objectDropShadow.shadowColor = Utils.luminosity(this.options.shadow || this.options.stroke, 0);
           this.objectDropShadow.shadowBlur = 30;
           this.objectDropShadow.shadowOffset = new Point(0, 0);
         }
@@ -99,6 +100,12 @@ angular.module('Body', ['Map'])
             new Color(0,0,0,0.3),
             new Color(0,0,0,0.7),
             new Color(0,0,0,1)
+          ];
+          this_.object.fillColor.gradient.stops = [
+            [Utils.luminosity(this_.options.fill, 0), 0.05],
+            [Utils.luminosity(this_.options.fill, 0), 0.3],
+            [Utils.luminosity(this_.options.fill, 0), 0.7],
+            [Utils.luminosity(this_.options.fill, 0), 1]
           ];
         });
         this.model.on('update', function() {
@@ -134,6 +141,12 @@ angular.module('Body', ['Map'])
             new Color(0,0,0,0.7 - 0.7 * position),
             new Color(0,0,0,1 - position)
           ];
+          this_.object.fillColor.gradient.stops = [
+            [Utils.luminosity(this_.options.fill, 0.2 * position), 0.05],
+            [Utils.luminosity(this_.options.fill, -0.1 * position), 0.3],
+            [Utils.luminosity(this_.options.fill, -0.5 * position), 0.7],
+            [Utils.luminosity(this_.options.fill, -1 * position), 1]
+          ];
         }, function() {
           this_.objectNightShade.visible = false;
         });
@@ -141,7 +154,6 @@ angular.module('Body', ['Map'])
       },
       focus: function focus() {
         this.onMouseUp();
-      },
-      bs: 10
+      }
     });
   }]);
