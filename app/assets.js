@@ -49,15 +49,15 @@ module.exports = {
     return files;
   }()),
   css: (function() {
-    var files = _.compact(readDir(path.resolve(__dirname, '..', 'public/static/css'), '')
+    var files = _.compact(readDir(path.resolve(__dirname, '..', 'public/css'), '')
       .map(function(fileName) {
         return fileName.match(/\.css$/) ? {
-          path: 'static/css/' + fileName
+          path: 'css/' + fileName
         } : false;
       }));
 
     floatItems(files, {path: [
-      'static/css/main.css'
+      'css/main.css'
     ]});
 
     return files;

@@ -101,7 +101,7 @@ angular.module('factories', [])
         else if (value = cache.get(key))
           deferred.resolve(value);
         else
-          paper.project.importSVG('/static/images/' + key + '.svg', function(group) {
+          paper.project.importSVG('/images/' + key + '.svg', function(group) {
             cache.put(key, group);
             deferred.resolve(group);
           });

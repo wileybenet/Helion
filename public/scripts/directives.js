@@ -1,7 +1,7 @@
 angular.module('directives', [])  
   .directive('canvasPopup', ['$timeout', function($timeout) {
     return {
-      templateUrl: '/static/html/popup.html',
+      templateUrl: '/html/popup.html',
       scope: {
         data: '=canvasPopup'
       }

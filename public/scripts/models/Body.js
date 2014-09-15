@@ -90,16 +90,16 @@ angular.module('Body', ['Map'])
 
         Canvas.bodies.addChild(this.path);
 
-        Emitter.on('camera:reset', function(evt) {
+        Canvas.on('camera:reset', function(evt) {
           if (this_._focused) {
             this_._focused = false;
           }
           this_.objectNightShade.visible = true;
           this_.objectNightShade.fillColor.gradient.stops = [
-            new Color(0,0,0,0),
-            new Color(0,0,0,0.3),
-            new Color(0,0,0,0.7),
-            new Color(0,0,0,1)
+            [new Color(0,0,0,0), 0.05],
+            [new Color(0,0,0,0.3), 0.3],
+            [new Color(0,0,0,0.7), 0.7],
+            [new Color(0,0,0,1), 1]
           ];
           this_.object.fillColor.gradient.stops = [
             [Utils.luminosity(this_.options.fill, 0), 0.05],
@@ -136,10 +136,10 @@ angular.module('Body', ['Map'])
 
         Canvas.focusCamera(this.object.position, 15 / this.model.config.radius, function(position) {
           this_.objectNightShade.fillColor.gradient.stops = [
-            new Color(0,0,0,0),
-            new Color(0,0,0,0.3 - 0.3 * position),
-            new Color(0,0,0,0.7 - 0.7 * position),
-            new Color(0,0,0,1 - position)
+            [new Color(0,0,0,0), 0.05],
+            [new Color(0,0,0,0.2 - 0.3 * position), 0.3],
+            [new Color(0,0,0,0.6 - 0.7 * position), 0.7],
+            [new Color(0,0,0,1 - position), 1]
           ];
           this_.object.fillColor.gradient.stops = [
             [Utils.luminosity(this_.options.fill, 0.2 * position), 0.05],

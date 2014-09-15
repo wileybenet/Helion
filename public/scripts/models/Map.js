@@ -153,10 +153,7 @@ angular.module('Map', [])
 
     return {
       KavrayskiyVII: Map.extend({
-        initialize: function KavrayskiyVII() {
-          this.$uper.constructor.apply(this, arguments);
-          // http://www.progonos.com/furuti/MapProj/Normal/CartHow/HowKav7/howKav7.html
-        },
+        // http://www.progonos.com/furuti/MapProj/Normal/CartHow/HowKav7/howKav7.html
         _setProjectionConstants: function _setProjectionConstants(bounds) {
           var W = bounds.width / 4,
             H = Math.sqrt(4 / 3) * W;

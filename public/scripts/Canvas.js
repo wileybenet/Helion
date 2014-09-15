@@ -1,7 +1,7 @@
 angular.module('Canvas', [])
-  .service('Canvas', ['Emitter', function(Emitter) {
-    return {
-      '$init': function() {
+  .service('Canvas', ['Base', function(Base) {
+    var Canvas = Base.extend({
+      initialize: function() {
         var this_ = this,
           canvas = document.getElementById('main-canvas'),
           layer;
@@ -35,7 +35,7 @@ angular.module('Canvas', [])
           z_1 = zoom,
           dz = z_1 - z_0;
 
-        Emitter.animate('canvas', function(position) {
+        this.animate('canvas', function(position) {
           view.setCenter([
             x_0 + (dx - (dx * (1 - position)) / (dz * position + z_0)),
             y_0 + (dy - (dy * (1 - position)) / (dz * position + z_0))
@@ -57,7 +57,7 @@ angular.module('Canvas', [])
           z_1 = 1,
           dz = z_1 - z_0;
 
-        Emitter.animate('canvas', function(position) {
+        this.animate('canvas', function(position) {
           view.setCenter([
             x_0 + (dx * position) / (dz * position + z_0),
             y_0 + (dy * position) / (dz * position + z_0)
@@ -65,7 +65,9 @@ angular.module('Canvas', [])
           view.setZoom(z_0 + dz * position);
         }, 500, 'easeInOutCubic');
 
-        Emitter.emit('camera:reset', {});
+        this.emit('camera:reset', {});
       }
-    };
+    });
+    var canvas = new Canvas();
+    return canvas;
   }]);

@@ -12,8 +12,6 @@ angular.module('Helion', ['ngResource', 'core', 'Canvas', 'System', 'Utilities']
   }])
   .controller('CanvasCtrl', ['$scope', '$rootScope', '$q', 'Body', 'Mover', 'Canvas', 'System', 'Loader', 'User',
   function($scope, $rootScope, $q, Body, Mover, Canvas, System, Loader, User) {
-    Canvas.$init();
-
     $q.all({
       bodies: Body.all().$promise,
       movers: Mover.all().$promise,
