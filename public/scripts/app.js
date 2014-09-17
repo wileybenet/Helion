@@ -15,7 +15,8 @@ angular.module('Helion', ['ngResource', 'core', 'Canvas', 'System', 'Utilities']
     $q.all({
       bodies: Body.all().$promise,
       movers: Mover.all().$promise,
-      eris: Loader.get('eris')
+      eris: Loader.get('eris'),
+      mir: Loader.get('mir')
     }).then(function(res) {
       var bodies = res.bodies.map(function(body) {
         return new Body(body);

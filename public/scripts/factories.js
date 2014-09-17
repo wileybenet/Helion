@@ -89,7 +89,8 @@ angular.module('factories', [])
   .factory('Loader', ['$q', '$cacheFactory', 'Log', function($q, $cacheFactory, Log) {
     var cache = $cacheFactory('asset'),
       availableFiles = [
-        'eris'
+        'eris',
+        'mir'
       ];
     return {
       get: function(key) {

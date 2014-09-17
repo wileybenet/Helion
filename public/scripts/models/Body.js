@@ -61,10 +61,7 @@ angular.module('Body', ['Map'])
         this.objectDropShadow.style = {
           shadowColor: '#000',
           shadowBlur: 6,
-          shadowOffset: new Point(5, 5),
-          // strokeColor: this.options.stroke ? Utils.luminosity(this.options.stroke, -0.3) : '#000',
-          // strokeWidth: this.options.strokeWidth || 2,
-          // strokeOpacity: this.options.strokeOpacity || 0.2
+          shadowOffset: new Point(5, 5)
         };
 
         if (this.options.stroke) {
@@ -73,12 +70,14 @@ angular.module('Body', ['Map'])
           this.objectDropShadow.shadowOffset = new Point(0, 0);
         }
 
+        this.surfaceMapGroup = new Group([]);
+        this.surfaceMapGroup.setBounds([this.object.bounds.centerX, this.object.bounds.centerY], [this.object.bounds.width, this.object.bounds.height]);
+
         this.clippingGroup = new Group([
           this.object,
+          this.surfaceMapGroup,
           this.objectNightShade
         ]);
-
-        // this.clippingGroup.clipped = true;
 
         this.path = new Group([
           this.objectDropShadow,
@@ -118,7 +117,7 @@ angular.module('Body', ['Map'])
 
         Loader.get(this.name).then(function(group) {
           this_.map = new Map.KavrayskiyVII(group, this_.object.clone());
-          this_.clippingGroup.insertChild(1, this_.map.path);
+          this_.surfaceMapGroup.addChild(this_.map.path);
           this_.map.revolve();
         });
       },
