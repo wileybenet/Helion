@@ -25,10 +25,10 @@ angular.module('Map', [])
         placeholder.remove();
       },
       _setProjectionConstants: function _setProjectionConstants() {
-        // must return {x, y, factor} (a disproportionate scale factor)
+        //# must return {x, y, factor} (a disproportionate scale factor)
       },
       _mapProjectionToSpherical: function _mapProjectionToSpherical(point) {
-        // must set point.λ and point.φ
+        //# must set point.λ and point.φ
       },
       _update: function _update() {
         var this_ = this;
