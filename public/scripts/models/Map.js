@@ -17,7 +17,10 @@ angular.module('Map', [])
         this.paths = this._formatPaths(this.path);
 
         this.path.position.x = this.destinationBounds.centerX;
-        this.path.position.y = this.destinationBounds.centerY;
+        this.path.position.y = this.destinationBounds.centerY - 2.5;
+
+        var cir = Path.Circle([this.destinationBounds.centerX, this.destinationBounds.centerY], 3);
+        cir.fillColor = '#F00';
         
         this._update();
 
@@ -55,7 +58,7 @@ angular.module('Map', [])
       revolve: function revolve() {
         var this_ = this;
         this.stop = this.onFrame(function(time) {
-          this_.setRotation(time / 200);
+          this_.setRotation(time / 800);
         });
       },
       setRotation: function setRotation(pixelDistance) {
