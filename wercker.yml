@@ -40,8 +40,8 @@ deploy:
         name: Create AWS credential file
         filename: $AWS_CREDENTIAL_FILE
         content: |-
-            AWSAccessKeyId=AKIAJKNGZMYHGYVZEGIA
-            AWSSecretKey=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
+            AWSAccessKeyId=
+            AWSSecretKey=
 
     # I'm not sure which information is mendatory, I've copied
     # the full content from the config file on my local dev machine
