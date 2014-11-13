@@ -34,11 +34,6 @@ angular.module('Helion', ['ngResource', 'core', 'Canvas', 'System', 'Utilities']
         $('#main-canvas').fadeTo('fast', 1);
       }, 0);
     });
-
-
-    window.Body = Body;
-    window.Mover = Mover;
-    window.User = User;
   }]);
 
 

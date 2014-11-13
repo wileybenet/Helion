@@ -68,6 +68,6 @@ angular.module('Canvas', [])
         this.emit('camera:reset', {});
       }
     });
-    var canvas = new Canvas();
-    return canvas;
+
+    return new Canvas();
   }]);

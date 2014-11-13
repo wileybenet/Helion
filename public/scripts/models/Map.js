@@ -18,9 +18,6 @@ angular.module('Map', [])
 
         this.path.position.x = this.destinationBounds.centerX;
         this.path.position.y = this.destinationBounds.centerY - 2.5;
-
-        var cir = Path.Circle([this.destinationBounds.centerX, this.destinationBounds.centerY], 3);
-        cir.fillColor = '#F00';
         
         this._update();
 
@@ -133,7 +130,7 @@ angular.module('Map', [])
           if (path.children && path.children.length > 0) {
             paths = paths.concat(this_._formatPaths(path));
           } else {
-            path.flatten(5);
+            // path.flatten(5);
             path.segments.pluck('point').forEach(function(point) {
               point.x = point.x - this_.constants.x;
               point.y *= this_.constants.factor;
